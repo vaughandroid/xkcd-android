@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'realm-android'
 
 android {
@@ -30,6 +31,10 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += ['src/sharedTest/java', 'src/sharedTest/kotlin']
         androidTest.java.srcDirs += ['src/sharedTest/java', 'src/sharedTest/kotlin']
+
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -37,6 +42,10 @@ dependencies {
     compile 'org.jetbrains.kotlin:kotlin-stdlib:' + kotlinVersion
 
     compile 'com.jakewharton.timber:timber:4.5.1'
+
+    def autoValueVersion = '1.2'
+    provided 'com.google.auto.value:auto-value:' + autoValueVersion
+    annotationProcessor 'com.google.auto.value:auto-value:' + autoValueVersion
 
     def daggerVersion = '2.9'
     compile 'com.google.dagger:dagger:' + daggerVersion
@@ -54,6 +63,8 @@ dependencies {
     def retrofitVersion = '2.2.0'
     compile 'com.squareup.retrofit2:retrofit:' + retrofitVersion
     compile 'com.squareup.retrofit2:adapter-rxjava2:' + retrofitVersion
+
+    compile 'com.google.code.gson:gson:2.8.0'
 
     compile 'com.squareup.picasso:picasso:2.5.2'
 
