@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'realm-android'
 
@@ -8,7 +7,7 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        applicationId "me.vaughandroid.bootstrap"
+        applicationId "me.vaughandroid.xkcdreader"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
@@ -28,9 +27,9 @@ android {
     }
 
     sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-        test.java.srcDirs += ['src/sharedTest/java', 'src/sharedTest/kotlin']
-        androidTest.java.srcDirs += ['src/sharedTest/java', 'src/sharedTest/kotlin']
+        test.java.srcDirs += 'src/sharedTest/java'
+        androidTest.java.srcDirs += 'src/sharedTest/java'
+    }
 
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_8
@@ -39,8 +38,6 @@ android {
 }
 
 dependencies {
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:' + kotlinVersion
-
     compile 'com.jakewharton.timber:timber:4.5.1'
 
     def autoValueVersion = '1.2'
@@ -58,7 +55,6 @@ dependencies {
     compile 'com.trello.rxlifecycle2:rxlifecycle:' + rxLifecycleVersion
     compile 'com.trello.rxlifecycle2:rxlifecycle-android:' + rxLifecycleVersion
     compile 'com.trello.rxlifecycle2:rxlifecycle-components:' + rxLifecycleVersion
-    compile 'com.trello.rxlifecycle2:rxlifecycle-kotlin:' + rxLifecycleVersion
 
     def retrofitVersion = '2.2.0'
     compile 'com.squareup.retrofit2:retrofit:' + retrofitVersion
