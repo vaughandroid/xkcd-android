@@ -7,7 +7,7 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        applicationId "me.vaughandroid.xkcdreader"
+        applicationId "me.vaughandroid.xkcdroid"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
         versionCode 1
@@ -44,6 +44,8 @@ dependencies {
     provided 'com.google.auto.value:auto-value:' + autoValueVersion
     annotationProcessor 'com.google.auto.value:auto-value:' + autoValueVersion
 
+    compile 'com.jakewharton.threetenabp:threetenabp:1.0.5'
+
     def daggerVersion = '2.9'
     compile 'com.google.dagger:dagger:' + daggerVersion
     annotationProcessor 'com.google.dagger:dagger-compiler:' + daggerVersion
@@ -58,6 +60,7 @@ dependencies {
 
     def retrofitVersion = '2.2.0'
     compile 'com.squareup.retrofit2:retrofit:' + retrofitVersion
+    compile 'com.squareup.retrofit2:converter-gson:' + retrofitVersion
     compile 'com.squareup.retrofit2:adapter-rxjava2:' + retrofitVersion
 
     compile 'com.google.code.gson:gson:2.8.0'
