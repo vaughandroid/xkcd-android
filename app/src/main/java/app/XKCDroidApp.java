@@ -7,13 +7,14 @@ import com.jakewharton.threetenabp.AndroidThreeTen;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import rx.AndroidSchedulerProvider;
+import rx.SchedulerProvider;
 
 public class XKCDroidApp extends Application {
 
-    private static Retrofit retrofit;
-
     // TODO: Inject this
-    public static Retrofit getRetrofit() {
+    private static Retrofit retrofit;
+    public static Retrofit retrofit() {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
                     .baseUrl("https://xkcd.com/")
@@ -22,6 +23,15 @@ public class XKCDroidApp extends Application {
                     .build();
         }
         return retrofit;
+    }
+
+    // TODO: Inject this
+    private static SchedulerProvider schedulerProvider;
+    public static SchedulerProvider schedulerProvider() {
+        if (schedulerProvider == null) {
+            schedulerProvider = new AndroidSchedulerProvider();
+        }
+        return schedulerProvider;
     }
 
     @Override

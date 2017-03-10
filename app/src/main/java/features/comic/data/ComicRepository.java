@@ -8,5 +8,6 @@ import io.reactivex.Single;
 
 public interface ComicRepository {
 
+    Single<Comic> getLatestComic();
     Single<Comic> getComic(@NonNull ComicId id);
 }

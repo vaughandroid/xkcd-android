@@ -8,4 +8,7 @@ public interface ComicService {
 
     @GET("/{num}/info.0.json")
     Single<ComicDto> getComic(@Path(("num")) int id);
+
+    @GET("/info.0.json")
+    Single<ComicDto> getLatestComic();
 }
