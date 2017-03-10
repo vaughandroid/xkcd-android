@@ -8,9 +8,14 @@ import com.google.auto.value.AutoValue;
 import org.threeten.bp.LocalDate;
 
 import java.net.URL;
+import java.util.Comparator;
 
 @AutoValue
 public abstract class Comic {
+
+    public static Comparator<? super Comic> idComparator() {
+        return (c1, c2) -> c1.id().intVal() - c2.id().intVal();
+    }
 
     public static Builder builder() {
         return new AutoValue_Comic.Builder();
