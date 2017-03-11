@@ -14,6 +14,7 @@ import java.util.List;
 import io.reactivex.Single;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -47,14 +48,15 @@ public class GetNextPageOfComicsUseCaseTest {
         assertThat(comics).containsExactly(stubComic(1), stubComic(2));
     }
 
-    @Test public void pastEndOfRange_ReturnsEmptyList() throws Exception {
+    @Test public void pastEndOfRange_RaisesError() throws Exception {
         GetNextPageOfComicsUseCase it = new GetNextPageOfComicsUseCase(getComicCountUseCase, getComicUseCase);
         when(getComicCountUseCase.single()).thenReturn(Single.just(100));
-        when(getComicUseCase.single(any())).thenThrow(new RuntimeException());
 
-        List<Comic> comics = it.single(ComicId.create(101), 50).blockingGet();
-
-        assertThat(comics).isEmpty();
+        it.single(ComicId.create(101), 50)
+                .subscribe(
+                        comics -> fail(),
+                        throwable -> assertThat(throwable).isInstanceOf(RuntimeException.class)
+                );
     }
 
     @Test public void comicsAreOrdered() throws Exception {
@@ -71,7 +73,44 @@ public class GetNextPageOfComicsUseCaseTest {
         assertThat(comics).containsExactly(stubComic(1), stubComic(2), stubComic(3));
     }
 
-    // TODO: Test failures. Skip item if it fails? Replace with placeholder?
+    @Test public void getComicCount_Error_RaisesError() throws Exception {
+        GetNextPageOfComicsUseCase it = new GetNextPageOfComicsUseCase(getComicCountUseCase, getComicUseCase);
+        when(getComicCountUseCase.single()).thenReturn(Single.error(new RuntimeException()));
+
+        it.single(ComicId.create(1), 1)
+                .subscribe(
+                        comics -> fail(),
+                        throwable -> assertThat(throwable).isInstanceOf(RuntimeException.class)
+                );
+    }
+
+    @Test public void getComic_SomeErrors_SkipsThoseComics() throws Exception {
+        GetNextPageOfComicsUseCase it = new GetNextPageOfComicsUseCase(getComicCountUseCase, getComicUseCase);
+        when(getComicCountUseCase.single()).thenReturn(Single.just(100));
+        when(getComicUseCase.single(any())).thenReturn(
+                Single.just(stubComic(1)),
+                Single.error(new RuntimeException()),
+                Single.just(stubComic(3)),
+                Single.error(new RuntimeException()),
+                Single.just(stubComic(5))
+        );
+
+        List<Comic> comics = it.single(ComicId.create(1), 5).blockingGet();
+
+        assertThat(comics).containsExactly(stubComic(1), stubComic(3), stubComic(5));
+    }
+
+    @Test public void getComic_AllErrors_RaisesError() throws Exception {
+        GetNextPageOfComicsUseCase it = new GetNextPageOfComicsUseCase(getComicCountUseCase, getComicUseCase);
+        when(getComicCountUseCase.single()).thenReturn(Single.just(100));
+        when(getComicUseCase.single(any())).thenReturn(Single.error(new RuntimeException()));
+
+        it.single(ComicId.create(1), 1)
+                .subscribe(
+                        comics -> fail(),
+                        throwable -> assertThat(throwable).isInstanceOf(RuntimeException.class)
+                );
+    }
 
     private Comic stubComic(int num) {
         return Comic.builder()

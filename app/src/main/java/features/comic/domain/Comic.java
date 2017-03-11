@@ -7,7 +7,6 @@ import com.google.auto.value.AutoValue;
 
 import org.threeten.bp.LocalDate;
 
-import java.net.URL;
 import java.util.Comparator;
 
 @AutoValue

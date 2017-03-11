@@ -6,6 +6,8 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.exceptions.Exceptions;
+import io.reactivex.internal.util.ExceptionHelper;
 
 public class GetNextPageOfComicsUseCase {
 
@@ -22,10 +24,20 @@ public class GetNextPageOfComicsUseCase {
         return getComicCountUseCase.single()
                 .flatMapObservable(maxCount -> {
                     int count = Math.min(pageSize, maxCount - firstId.intVal() + 1);
-                    return Observable.range(firstId.intVal(), count);
+                    if (count > 0) {
+                        return Observable.range(firstId.intVal(), count);
+                    } else {
+                        throw new IndexOutOfBoundsException("Past end of range");
+                    }
                 })
                 .map(ComicId::create)
-                .flatMapSingle(getComicUseCase::single)
-                .toSortedList(Comic.idComparator());
+                .flatMapMaybe((comicId) -> getComicUseCase.single(comicId).toMaybe().onErrorComplete())
+                .toSortedList(Comic.idComparator())
+                .map(comics -> {
+                    if (comics.isEmpty()) {
+                        throw new RuntimeException("Failed to fetch any comics");
+                    }
+                    return comics;
+                });
     }
 }
