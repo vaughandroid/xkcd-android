@@ -12,14 +12,16 @@ import com.squareup.picasso.Picasso;
 import javax.inject.Inject;
 
 import app.CLEActivity;
+import app.XKCDroidApp;
 import butterknife.BindView;
 import features.comic.data.ComicRepositoryImpl;
-import features.comic.domain.Comic;
 import features.comic.domain.ComicId;
 import features.comic.domain.GetComicUseCase;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import me.vaughandroid.xkcdreader.R;
+import rx.AndroidSchedulerProvider;
+import rx.SchedulerProvider;
 import timber.log.Timber;
 import util.Assertions;
 
@@ -41,7 +43,7 @@ public class ViewComicActivity extends CLEActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_comic);
 
-        // TODO: Inject this
+        // TODO: Inject these
         getComicUseCase = new GetComicUseCase(new ComicRepositoryImpl());
 
         initToolbar();
@@ -62,17 +64,19 @@ public class ViewComicActivity extends CLEActivity {
 
     private void fetchComic() {
         Disposable d = getComicUseCase.single(getComicId())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSuccess(comic -> setComic(comic))
-                .doOnError(error -> Timber.e(error))
-                .subscribe();
+                .observeOn(XKCDroidApp.schedulerProvider().ui())
+                .subscribe(
+                        comic -> {
+                            toolbar.setTitle(comic.title());
+                            Picasso.with(this).load(comic.imageUri()).into(comicImageView);
+                            showContent();
+                        },
+                        error -> {
+                            Timber.e(error);
+                            showError();
+                        }
+                );
         disposables.add(d);
-    }
-
-    private void setComic(@NonNull Comic comic) {
-        toolbar.setTitle(comic.title());
-        Picasso.with(this).load(comic.imageUri()).into(comicImageView);
-        showContent();
     }
 
 }
