@@ -13,22 +13,20 @@ import javax.inject.Inject;
 import app.CLEActivity;
 import app.XKCDroidApp;
 import butterknife.BindView;
-import butterknife.OnClick;
 import features.comic.data.ComicRepository;
 import features.comic.data.ComicRepositoryImpl;
-import features.comic.domain.ComicId;
-import features.comic.domain.GetComicCountUseCase;
+import features.comic.domain.ComicNumber;
+import features.comic.domain.GetMaximumComicNumberUseCase;
 import features.comic.domain.GetComicUseCase;
 import features.comic.domain.GetLatestComicUseCase;
 import features.comic.domain.GetNextPageOfComicsUseCase;
 import io.reactivex.disposables.Disposable;
 import me.vaughandroid.xkcdreader.R;
-import rx.AndroidSchedulerProvider;
-import rx.SchedulerProvider;
 import timber.log.Timber;
 
 public class ComicListActivity extends CLEActivity {
 
+    public static final int PAGE_SIZE = 20;
     @Inject GetNextPageOfComicsUseCase getNextPageOfComicsUseCase;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
@@ -44,9 +42,9 @@ public class ComicListActivity extends CLEActivity {
         // TODO: Inject these
         ComicRepository comicRepository = new ComicRepositoryImpl();
         GetLatestComicUseCase getLatestComicUseCase = new GetLatestComicUseCase(comicRepository);
-        GetComicCountUseCase getComicCountUseCase = new GetComicCountUseCase(getLatestComicUseCase);
+        GetMaximumComicNumberUseCase getMaximumComicNumberUseCase = new GetMaximumComicNumberUseCase(getLatestComicUseCase);
         GetComicUseCase getComicUseCase = new GetComicUseCase(comicRepository);
-        getNextPageOfComicsUseCase = new GetNextPageOfComicsUseCase(getComicCountUseCase, getComicUseCase);
+        getNextPageOfComicsUseCase = new GetNextPageOfComicsUseCase(getMaximumComicNumberUseCase, getComicUseCase);
 
         fetchComics();
     }
@@ -61,7 +59,7 @@ public class ComicListActivity extends CLEActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ComicAdapter(this);
         adapter.setOnComicClickedListener(
-                comic -> startActivity(ViewComicActivity.intent(comic.id(), this))
+                comic -> startActivity(ViewComicActivity.intent(comic.number(), this))
         );
         recyclerView.setAdapter(adapter);
     }
@@ -82,14 +80,9 @@ public class ComicListActivity extends CLEActivity {
         }
     }
 
-    @OnClick(R.id.fab)
-    void onClickFab() {
-        startActivity(ViewComicActivity.intent(ComicId.create(123), this));
-    }
-
     private void fetchComics() {
         showLoading();
-        Disposable d = getNextPageOfComicsUseCase.single(ComicId.create(1), 20)
+        Disposable d = getNextPageOfComicsUseCase.single(ComicNumber.create(1), PAGE_SIZE)
                 .observeOn(XKCDroidApp.schedulerProvider().ui())
                 .subscribe(
                         comics -> {

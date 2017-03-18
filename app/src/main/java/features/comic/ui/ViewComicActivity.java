@@ -15,13 +15,10 @@ import app.CLEActivity;
 import app.XKCDroidApp;
 import butterknife.BindView;
 import features.comic.data.ComicRepositoryImpl;
-import features.comic.domain.ComicId;
+import features.comic.domain.ComicNumber;
 import features.comic.domain.GetComicUseCase;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import me.vaughandroid.xkcdreader.R;
-import rx.AndroidSchedulerProvider;
-import rx.SchedulerProvider;
 import timber.log.Timber;
 import util.Assertions;
 
@@ -29,8 +26,8 @@ public class ViewComicActivity extends CLEActivity {
 
     private static final String COMIC_ID = "COMIC_ID";
 
-    public static Intent intent(@NonNull ComicId comicId, @NonNull Context context) {
-        return new Intent(context, ViewComicActivity.class).putExtra(COMIC_ID, comicId);
+    public static Intent intent(@NonNull ComicNumber comicNumber, @NonNull Context context) {
+        return new Intent(context, ViewComicActivity.class).putExtra(COMIC_ID, comicNumber);
     }
 
     @Inject GetComicUseCase getComicUseCase;
@@ -56,10 +53,10 @@ public class ViewComicActivity extends CLEActivity {
     }
 
     @NonNull
-    private ComicId getComicId() {
-        ComicId comicId = (ComicId) getIntent().getSerializableExtra(COMIC_ID);
-        Assertions.notNull(comicId, "Comic ID not present.");
-        return comicId;
+    private ComicNumber getComicId() {
+        ComicNumber comicNumber = (ComicNumber) getIntent().getSerializableExtra(COMIC_ID);
+        Assertions.notNull(comicNumber, "Comic ID not present.");
+        return comicNumber;
     }
 
     private void fetchComic() {

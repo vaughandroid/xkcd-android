@@ -4,10 +4,9 @@ import android.support.annotation.NonNull;
 
 import app.XKCDroidApp;
 import features.comic.domain.Comic;
-import features.comic.domain.ComicId;
+import features.comic.domain.ComicNumber;
 import io.reactivex.Single;
 import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
 import rx.SchedulerProvider;
 
 public class ComicRepositoryImpl implements ComicRepository {
@@ -17,7 +16,7 @@ public class ComicRepositoryImpl implements ComicRepository {
     private final SchedulerProvider schedulerProvider;
 
     private final Function<ComicDto, Comic> dtoToComic = dto -> Comic.builder()
-            .id(dto.num)
+            .number(dto.num)
             .title(dto.title)
             .altText(dto.alt)
             .imageUri(dto.imgUri())
@@ -41,7 +40,7 @@ public class ComicRepositoryImpl implements ComicRepository {
     }
 
     @Override
-    public Single<Comic> getComic(@NonNull ComicId id) {
+    public Single<Comic> getComic(@NonNull ComicNumber id) {
         return service.getComic(id.intVal())
                 .subscribeOn(schedulerProvider.io())
                 .map(dtoToComic);

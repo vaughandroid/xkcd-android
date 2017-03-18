@@ -7,25 +7,24 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import io.reactivex.Single;
+import testutil.StubFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-public class GetComicCountUseCaseTest {
+public class GetMaximumComicNumberUseCaseTest {
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock GetLatestComicUseCase getLatestComicUseCase;
-    @Mock Comic comic;
 
     @Test public void returnsNumberOfLatestComic() throws Exception {
-        GetComicCountUseCase it = new GetComicCountUseCase(getLatestComicUseCase);
-        when(getLatestComicUseCase.single()).thenReturn(Single.just(comic));
-        when(comic.id()).thenReturn(ComicId.create(1234));
+        GetMaximumComicNumberUseCase it = new GetMaximumComicNumberUseCase(getLatestComicUseCase);
+        when(getLatestComicUseCase.single()).thenReturn(Single.just(StubFactory.comic(1234)));
 
-        int count = it.single().blockingGet();
+        ComicNumber maxNumber = it.single().blockingGet();
 
-        assertThat(count).isEqualTo(1234);
+        assertThat(maxNumber).isEqualTo(ComicNumber.create(1234));
     }
 
 }

@@ -14,7 +14,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import features.comic.domain.Comic;
-import features.comic.domain.ComicId;
 
 
 public class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {

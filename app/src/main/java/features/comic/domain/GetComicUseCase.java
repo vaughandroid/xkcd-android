@@ -13,7 +13,7 @@ public class GetComicUseCase {
         this.repository = repository;
     }
 
-    public Single<Comic> single(@NonNull ComicId comicId) {
-        return repository.getComic(comicId);
+    public Single<Comic> single(@NonNull ComicNumber comicNumber) {
+        return repository.getComic(comicNumber);
     }
 }

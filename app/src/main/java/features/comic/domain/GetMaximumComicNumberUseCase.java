@@ -4,16 +4,16 @@ import android.support.annotation.NonNull;
 
 import io.reactivex.Single;
 
-public class GetComicCountUseCase {
+public class GetMaximumComicNumberUseCase {
 
     private final GetLatestComicUseCase getLatestComicUseCase;
 
-    public GetComicCountUseCase(@NonNull GetLatestComicUseCase getLatestComicUseCase) {
+    public GetMaximumComicNumberUseCase(@NonNull GetLatestComicUseCase getLatestComicUseCase) {
         this.getLatestComicUseCase = getLatestComicUseCase;
     }
 
-    public Single<Integer> single() {
+    public Single<ComicNumber> single() {
         return getLatestComicUseCase.single()
-                .map(comic -> comic.id().intVal());
+                .map(Comic::number);
     }
 }
