@@ -46,7 +46,8 @@ public class ComicListActivity extends CLEActivity {
         GetComicUseCase getComicUseCase = new GetComicUseCase(comicRepository);
         getNextPageOfComicsUseCase = new GetNextPageOfComicsUseCase(getMaximumComicNumberUseCase, getComicUseCase);
 
-        fetchComics();
+        showLoading();
+        fetchNextPageOfComics(ComicNumber.create(1));
     }
 
     private void initViews() {
@@ -57,9 +58,10 @@ public class ComicListActivity extends CLEActivity {
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ComicAdapter(this);
-        adapter.setOnComicClickedListener(
-                comic -> startActivity(ViewComicActivity.intent(comic.number(), this))
+        adapter = new ComicAdapter(
+                this,
+                comic -> startActivity(ViewComicActivity.intent(comic.number(), this)),
+                nextComicNumber -> fetchNextPageOfComics(nextComicNumber)
         );
         recyclerView.setAdapter(adapter);
     }
@@ -80,13 +82,12 @@ public class ComicListActivity extends CLEActivity {
         }
     }
 
-    private void fetchComics() {
-        showLoading();
-        Disposable d = getNextPageOfComicsUseCase.single(ComicNumber.create(1), PAGE_SIZE)
+    private void fetchNextPageOfComics(ComicNumber first) {
+        Disposable d = getNextPageOfComicsUseCase.single(first, PAGE_SIZE)
                 .observeOn(XKCDroidApp.schedulerProvider().ui())
                 .subscribe(
                         comics -> {
-                            adapter.setComics(comics);
+                            adapter.addComics(comics);
                             showContent();
                         },
                         error -> {
