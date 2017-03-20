@@ -11,9 +11,8 @@ import android.view.MenuItem;
 import javax.inject.Inject;
 
 import app.CLEActivity;
-import app.XKCDroidApp;
 import butterknife.BindView;
-import di.ActivityModule;
+import dagger.android.AndroidInjection;
 import features.comic.domain.ComicNumber;
 import features.comic.domain.GetNextPageOfComicsUseCase;
 import io.reactivex.disposables.Disposable;
@@ -29,6 +28,9 @@ public class ComicListActivity extends CLEActivity {
 
     @Inject SchedulerProvider schedulerProvider;
 
+    // TODO: This is just a proof of concept and can be removed
+    @Inject String activityName;
+
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.comic_list_recyclerview) RecyclerView recyclerView;
@@ -36,12 +38,12 @@ public class ComicListActivity extends CLEActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        initViews();
 
-        XKCDroidApp.appComponent()
-                .plus(new ActivityModule(this))
-                .inject(this);
+        Timber.d("Activity binding test: %s", activityName);
+
+        initViews();
 
         showLoading();
         fetchNextPageOfComics(ComicNumber.create(1));

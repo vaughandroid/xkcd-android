@@ -4,20 +4,21 @@ import javax.inject.Singleton;
 
 import app.XKCDroidApp;
 import dagger.Component;
-import features.comic.data.ComicRepository;
-import rx.SchedulerProvider;
+import dagger.android.AndroidInjectionModule;
+import features.comic.di.ComicListActivityModule;
+import features.comic.di.ViewComicActivityModule;
 
 @Singleton
-@Component(modules = AppModule.class)
+@Component(
+        modules = {
+                AppModule.class,
+                AndroidInjectionModule.class,
+                ComicListActivityModule.class,
+                ViewComicActivityModule.class
+        }
+)
 public interface AppComponent {
 
     void inject(XKCDroidApp app);
 
-    // Exports for sub-graphs.
-    XKCDroidApp app();
-    ComicRepository comicRepository();
-    SchedulerProvider schedulerProvider();
-
-    // Sub-graphs.
-    ActivityComponent plus(ActivityModule activityModule);
 }

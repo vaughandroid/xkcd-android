@@ -12,9 +12,8 @@ import com.squareup.picasso.Picasso;
 import javax.inject.Inject;
 
 import app.CLEActivity;
-import app.XKCDroidApp;
 import butterknife.BindView;
-import di.ActivityModule;
+import dagger.android.AndroidInjection;
 import features.comic.domain.ComicNumber;
 import features.comic.domain.GetComicUseCase;
 import io.reactivex.disposables.Disposable;
@@ -40,12 +39,9 @@ public class ViewComicActivity extends CLEActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_comic);
-
-        XKCDroidApp.appComponent()
-                .plus(new ActivityModule(this))
-                .inject(this);
 
         initToolbar();
         fetchComic();
