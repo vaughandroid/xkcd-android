@@ -17,4 +17,7 @@ public interface AppComponent {
     XKCDroidApp app();
     ComicRepository comicRepository();
     SchedulerProvider schedulerProvider();
+
+    // Sub-graphs.
+    ActivityComponent plus(ActivityModule activityModule);
 }

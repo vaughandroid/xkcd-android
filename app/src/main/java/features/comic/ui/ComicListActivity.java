@@ -14,12 +14,7 @@ import app.CLEActivity;
 import app.XKCDroidApp;
 import butterknife.BindView;
 import di.ActivityModule;
-import features.comic.data.ComicRepository;
-import features.comic.data.ComicRepositoryImpl;
 import features.comic.domain.ComicNumber;
-import features.comic.domain.GetMaximumComicNumberUseCase;
-import features.comic.domain.GetComicUseCase;
-import features.comic.domain.GetLatestComicUseCase;
 import features.comic.domain.GetNextPageOfComicsUseCase;
 import io.reactivex.disposables.Disposable;
 import me.vaughandroid.xkcdreader.R;
@@ -44,10 +39,8 @@ public class ComicListActivity extends CLEActivity {
         super.onCreate(savedInstanceState);
         initViews();
 
-        DaggerComicListComponent.builder()
-                .appComponent(XKCDroidApp.appComponent())
-                .activityModule(new ActivityModule(this))
-                .build()
+        XKCDroidApp.appComponent()
+                .plus(new ActivityModule(this))
                 .inject(this);
 
         showLoading();

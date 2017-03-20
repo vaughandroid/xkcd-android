@@ -1,16 +1,13 @@
 package di;
 
-import android.app.Activity;
-
-import dagger.Component;
+import dagger.Subcomponent;
+import features.comic.ui.ComicListActivity;
+import features.comic.ui.ViewComicActivity;
 
 @PerActivity
-@Component(
-        dependencies = AppComponent.class,
-        modules = ActivityModule.class
-)
+@Subcomponent(modules = ActivityModule.class)
 public interface ActivityComponent {
 
-    // Exports for sub-graphs.
-    Activity activity();
+    void inject(ComicListActivity activity);
+    void inject(ViewComicActivity activity);
 }

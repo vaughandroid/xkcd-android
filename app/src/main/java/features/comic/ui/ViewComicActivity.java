@@ -15,7 +15,6 @@ import app.CLEActivity;
 import app.XKCDroidApp;
 import butterknife.BindView;
 import di.ActivityModule;
-import features.comic.data.ComicRepositoryImpl;
 import features.comic.domain.ComicNumber;
 import features.comic.domain.GetComicUseCase;
 import io.reactivex.disposables.Disposable;
@@ -44,10 +43,8 @@ public class ViewComicActivity extends CLEActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_comic);
 
-        DaggerViewComicComponent.builder()
-                .appComponent(XKCDroidApp.appComponent())
-                .activityModule(new ActivityModule(this))
-                .build()
+        XKCDroidApp.appComponent()
+                .plus(new ActivityModule(this))
                 .inject(this);
 
         initToolbar();
