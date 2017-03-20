@@ -2,6 +2,8 @@ package features.comic.domain;
 
 import android.support.annotation.NonNull;
 
+import javax.inject.Inject;
+
 import features.comic.data.ComicRepository;
 import io.reactivex.Single;
 
@@ -9,7 +11,7 @@ public class GetComicUseCase {
 
     private final ComicRepository repository;
 
-    public GetComicUseCase(@NonNull ComicRepository repository) {
+    @Inject public GetComicUseCase(ComicRepository repository) {
         this.repository = repository;
     }
 

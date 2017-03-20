@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import app.CLEActivity;
 import app.XKCDroidApp;
 import butterknife.BindView;
+import di.ActivityModule;
 import features.comic.data.ComicRepository;
 import features.comic.data.ComicRepositoryImpl;
 import features.comic.domain.ComicNumber;
@@ -22,12 +23,16 @@ import features.comic.domain.GetLatestComicUseCase;
 import features.comic.domain.GetNextPageOfComicsUseCase;
 import io.reactivex.disposables.Disposable;
 import me.vaughandroid.xkcdreader.R;
+import rx.SchedulerProvider;
 import timber.log.Timber;
 
 public class ComicListActivity extends CLEActivity {
 
     public static final int PAGE_SIZE = 20;
+
     @Inject GetNextPageOfComicsUseCase getNextPageOfComicsUseCase;
+
+    @Inject SchedulerProvider schedulerProvider;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fab) FloatingActionButton fab;
@@ -39,12 +44,11 @@ public class ComicListActivity extends CLEActivity {
         super.onCreate(savedInstanceState);
         initViews();
 
-        // TODO: Inject these
-        ComicRepository comicRepository = new ComicRepositoryImpl();
-        GetLatestComicUseCase getLatestComicUseCase = new GetLatestComicUseCase(comicRepository);
-        GetMaximumComicNumberUseCase getMaximumComicNumberUseCase = new GetMaximumComicNumberUseCase(getLatestComicUseCase);
-        GetComicUseCase getComicUseCase = new GetComicUseCase(comicRepository);
-        getNextPageOfComicsUseCase = new GetNextPageOfComicsUseCase(getMaximumComicNumberUseCase, getComicUseCase);
+        DaggerComicListComponent.builder()
+                .appComponent(XKCDroidApp.appComponent())
+                .activityModule(new ActivityModule(this))
+                .build()
+                .inject(this);
 
         showLoading();
         fetchNextPageOfComics(ComicNumber.create(1));
@@ -84,7 +88,7 @@ public class ComicListActivity extends CLEActivity {
 
     private void fetchNextPageOfComics(ComicNumber first) {
         Disposable d = getNextPageOfComicsUseCase.single(first, PAGE_SIZE)
-                .observeOn(XKCDroidApp.schedulerProvider().ui())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         comics -> {
                             adapter.addComics(comics);

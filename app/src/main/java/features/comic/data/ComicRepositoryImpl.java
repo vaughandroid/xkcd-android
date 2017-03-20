@@ -2,6 +2,8 @@ package features.comic.data;
 
 import android.support.annotation.NonNull;
 
+import javax.inject.Inject;
+
 import app.XKCDroidApp;
 import features.comic.domain.Comic;
 import features.comic.domain.ComicNumber;
@@ -23,11 +25,7 @@ public class ComicRepositoryImpl implements ComicRepository {
             .date(dto.date())
             .build();
 
-    public ComicRepositoryImpl() {
-        this(XKCDroidApp.retrofit().create(ComicService.class), XKCDroidApp.schedulerProvider());
-    }
-
-    public ComicRepositoryImpl(@NonNull ComicService service, @NonNull SchedulerProvider schedulerProvider) {
+    @Inject public ComicRepositoryImpl(ComicService service, SchedulerProvider schedulerProvider) {
         this.service = service;
         this.schedulerProvider = schedulerProvider;
     }

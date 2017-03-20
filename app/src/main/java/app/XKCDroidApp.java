@@ -4,40 +4,39 @@ import android.app.Application;
 
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
+import javax.inject.Inject;
+
+import di.AppComponent;
+import di.AppModule;
+import di.DaggerAppComponent;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
-import rx.AndroidSchedulerProvider;
 import rx.SchedulerProvider;
+import util.Assertions;
 
 public class XKCDroidApp extends Application {
 
-    // TODO: Inject this
-    private static Retrofit retrofit;
-    public static Retrofit retrofit() {
-        if (retrofit == null) {
-            retrofit = new Retrofit.Builder()
-                    .baseUrl("https://xkcd.com/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .build();
-        }
-        return retrofit;
+    private static XKCDroidApp instance;
+
+    public static AppComponent appComponent() {
+        Assertions.notNull(instance, "Instance not set!");
+        return instance.appComponent;
     }
 
-    // TODO: Inject this
-    private static SchedulerProvider schedulerProvider;
-    public static SchedulerProvider schedulerProvider() {
-        if (schedulerProvider == null) {
-            schedulerProvider = new AndroidSchedulerProvider();
-        }
-        return schedulerProvider;
-    }
+    private AppComponent appComponent;
+
+    @Inject Retrofit retrofit;
+    @Inject SchedulerProvider schedulerProvider;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        instance = this;
 
         AndroidThreeTen.init(this);
+
+        appComponent = DaggerAppComponent.builder()
+                .appModule(new AppModule(this))
+                .build();
+        appComponent.inject(this);
     }
 }

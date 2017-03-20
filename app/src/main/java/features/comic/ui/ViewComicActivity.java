@@ -14,11 +14,13 @@ import javax.inject.Inject;
 import app.CLEActivity;
 import app.XKCDroidApp;
 import butterknife.BindView;
+import di.ActivityModule;
 import features.comic.data.ComicRepositoryImpl;
 import features.comic.domain.ComicNumber;
 import features.comic.domain.GetComicUseCase;
 import io.reactivex.disposables.Disposable;
 import me.vaughandroid.xkcdreader.R;
+import rx.SchedulerProvider;
 import timber.log.Timber;
 import util.Assertions;
 
@@ -32,6 +34,8 @@ public class ViewComicActivity extends CLEActivity {
 
     @Inject GetComicUseCase getComicUseCase;
 
+    @Inject SchedulerProvider schedulerProvider;
+
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.view_comic_imageview) ImageView comicImageView;
 
@@ -40,8 +44,11 @@ public class ViewComicActivity extends CLEActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_comic);
 
-        // TODO: Inject these
-        getComicUseCase = new GetComicUseCase(new ComicRepositoryImpl());
+        DaggerViewComicComponent.builder()
+                .appComponent(XKCDroidApp.appComponent())
+                .activityModule(new ActivityModule(this))
+                .build()
+                .inject(this);
 
         initToolbar();
         fetchComic();
@@ -61,7 +68,7 @@ public class ViewComicActivity extends CLEActivity {
 
     private void fetchComic() {
         Disposable d = getComicUseCase.single(getComicId())
-                .observeOn(XKCDroidApp.schedulerProvider().ui())
+                .observeOn(schedulerProvider.ui())
                 .subscribe(
                         comic -> {
                             toolbar.setTitle(comic.title());

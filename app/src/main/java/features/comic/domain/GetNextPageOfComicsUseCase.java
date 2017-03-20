@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -13,8 +15,8 @@ public class GetNextPageOfComicsUseCase {
     private final GetMaximumComicNumberUseCase getMaximumComicNumberUseCase;
     private final GetComicUseCase getComicUseCase;
 
-    public GetNextPageOfComicsUseCase(@NonNull GetMaximumComicNumberUseCase getMaximumComicNumberUseCase,
-                                      @NonNull GetComicUseCase getComicUseCase) {
+    @Inject public GetNextPageOfComicsUseCase(GetMaximumComicNumberUseCase getMaximumComicNumberUseCase,
+                                              GetComicUseCase getComicUseCase) {
         this.getMaximumComicNumberUseCase = getMaximumComicNumberUseCase;
         this.getComicUseCase = getComicUseCase;
     }
