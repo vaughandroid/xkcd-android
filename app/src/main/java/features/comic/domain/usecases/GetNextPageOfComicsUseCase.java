@@ -1,4 +1,4 @@
-package features.comic.domain;
+package features.comic.domain.usecases;
 
 import android.support.annotation.NonNull;
 
@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import features.comic.domain.models.Comic;
+import features.comic.domain.models.ComicNumber;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 

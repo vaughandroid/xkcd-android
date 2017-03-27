@@ -1,4 +1,4 @@
-package features.comic.domain;
+package features.comic.domain.models;
 
 import android.net.Uri;
 import android.support.annotation.Nullable;

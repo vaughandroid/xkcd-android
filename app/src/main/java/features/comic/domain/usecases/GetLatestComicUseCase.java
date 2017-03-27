@@ -1,8 +1,9 @@
-package features.comic.domain;
+package features.comic.domain.usecases;
 
 import javax.inject.Inject;
 
 import features.comic.data.ComicRepository;
+import features.comic.domain.models.Comic;
 import io.reactivex.Single;
 
 public class GetLatestComicUseCase {

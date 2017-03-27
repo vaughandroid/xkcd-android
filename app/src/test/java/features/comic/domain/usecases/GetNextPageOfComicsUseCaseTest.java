@@ -1,4 +1,4 @@
-package features.comic.domain;
+package features.comic.domain.usecases;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -8,6 +8,11 @@ import org.mockito.junit.MockitoRule;
 
 import java.util.List;
 
+import features.comic.domain.models.Comic;
+import features.comic.domain.models.ComicNumber;
+import features.comic.domain.usecases.GetComicUseCase;
+import features.comic.domain.usecases.GetMaximumComicNumberUseCase;
+import features.comic.domain.usecases.GetNextPageOfComicsUseCase;
 import io.reactivex.Single;
 import testutil.StubFactory;
 
@@ -22,7 +27,8 @@ public class GetNextPageOfComicsUseCaseTest {
 
     @Mock
     GetMaximumComicNumberUseCase getMaximumComicNumberUseCase;
-    @Mock GetComicUseCase getComicUseCase;
+    @Mock
+    GetComicUseCase getComicUseCase;
 
     @Test public void withinRange_FetchesExpectedNumberOfComics() throws Exception {
         GetNextPageOfComicsUseCase it = new GetNextPageOfComicsUseCase(getMaximumComicNumberUseCase, getComicUseCase);

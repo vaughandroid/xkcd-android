@@ -4,9 +4,8 @@ import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
-import app.XKCDroidApp;
-import features.comic.domain.Comic;
-import features.comic.domain.ComicNumber;
+import features.comic.domain.models.Comic;
+import features.comic.domain.models.ComicNumber;
 import io.reactivex.Single;
 import io.reactivex.functions.Function;
 import rx.SchedulerProvider;

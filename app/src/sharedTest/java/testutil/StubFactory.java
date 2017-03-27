@@ -4,7 +4,7 @@ import android.net.Uri;
 
 import org.threeten.bp.LocalDate;
 
-import features.comic.domain.Comic;
+import features.comic.domain.models.Comic;
 
 public class StubFactory {
 

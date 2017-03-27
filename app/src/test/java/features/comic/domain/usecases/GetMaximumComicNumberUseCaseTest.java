@@ -1,4 +1,4 @@
-package features.comic.domain;
+package features.comic.domain.usecases;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -6,6 +6,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import features.comic.domain.models.ComicNumber;
+import features.comic.domain.usecases.GetLatestComicUseCase;
+import features.comic.domain.usecases.GetMaximumComicNumberUseCase;
 import io.reactivex.Single;
 import testutil.StubFactory;
 
@@ -16,7 +19,8 @@ public class GetMaximumComicNumberUseCaseTest {
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    @Mock GetLatestComicUseCase getLatestComicUseCase;
+    @Mock
+    GetLatestComicUseCase getLatestComicUseCase;
 
     @Test public void returnsNumberOfLatestComic() throws Exception {
         GetMaximumComicNumberUseCase it = new GetMaximumComicNumberUseCase(getLatestComicUseCase);

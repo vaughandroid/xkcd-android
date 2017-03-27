@@ -12,8 +12,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import features.comic.domain.Comic;
-import features.comic.domain.ComicNumber;
+import features.comic.domain.models.Comic;
+import features.comic.domain.models.ComicNumber;
 import me.vaughandroid.xkcdreader.R;
 
 

@@ -1,4 +1,4 @@
-package features.comic.domain;
+package features.comic.domain.models;
 
 import android.support.annotation.NonNull;
 
