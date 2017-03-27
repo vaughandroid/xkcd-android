@@ -32,6 +32,7 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
 
     private final List<Comic> comics = new ArrayList<>();
 
+    private final Context context;
     private final LayoutInflater layoutInflater;
 
     private final OnComicClickedListener onComicClickedListener;
@@ -42,6 +43,7 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
     public ComicAdapter(Context context,
                         OnComicClickedListener onComicClickedListener,
                         OnLoadMoreListener onLoadMoreListener) {
+        this.context = context;
         layoutInflater = LayoutInflater.from(context);
         this.onComicClickedListener = onComicClickedListener;
         this.onLoadMoreListener = onLoadMoreListener;
@@ -58,7 +60,7 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case ITEM_COMIC:
-                return new ComicViewHolder(layoutInflater.inflate(android.R.layout.simple_list_item_1, parent, false));
+                return new ComicViewHolder(layoutInflater.inflate(R.layout.item_comic, parent, false));
             default:
                 return new LoadingViewHolder(layoutInflater.inflate(android.R.layout.simple_list_item_1, parent, false));
         }
@@ -104,7 +106,9 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
 
     class ComicViewHolder extends ViewHolder {
 
-        @BindView(android.R.id.text1) TextView textView;
+        @BindView(R.id.comic_number) TextView numberView;
+        @BindView(R.id.comic_date) TextView dateView;
+        @BindView(R.id.comic_title) TextView titleView;
 
         ComicViewHolder(View itemView) {
             super(itemView);
@@ -112,8 +116,10 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
         }
 
         public void setComic(Comic comic) {
-            textView.setText(comic.title());
-            textView.setOnClickListener(v -> {
+            numberView.setText(context.getString(R.string.comic_number, comic.number().intVal()));
+            dateView.setText(comic.date().toString());
+            titleView.setText(comic.title());
+            itemView.setOnClickListener(v -> {
                 if (onComicClickedListener != null) {
                     onComicClickedListener.onComicClicked(comic);
                 }

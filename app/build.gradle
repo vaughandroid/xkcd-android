@@ -81,6 +81,8 @@ dependencies {
     compile 'com.android.support:appcompat-v7:' + supportLibVersion
     compile 'com.android.support:design:' + supportLibVersion
 
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
+
     def espressoVersion = '2.2.2'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:' + espressoVersion
     androidTestCompile 'com.android.support.test.espresso:espresso-contrib:' + espressoVersion
