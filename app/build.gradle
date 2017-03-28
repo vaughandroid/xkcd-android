@@ -77,11 +77,15 @@ dependencies {
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:' + leakCanaryVersion
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:' + leakCanaryVersion
 
-    def supportLibVersion = '25.1.1'
+    def supportLibVersion = '25.3.0'
     compile 'com.android.support:appcompat-v7:' + supportLibVersion
     compile 'com.android.support:design:' + supportLibVersion
 
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    compile 'com.github.chrisbanes:PhotoView:2.0.0'
+
+    compile 'com.github.ozodrukh:CircularReveal:2.0.1@aar'
 
     def espressoVersion = '2.2.2'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:' + espressoVersion
