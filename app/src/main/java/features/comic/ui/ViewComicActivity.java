@@ -21,7 +21,7 @@ import app.CLEActivity;
 import butterknife.BindView;
 import dagger.android.AndroidInjection;
 import features.comic.domain.models.ComicNumber;
-import features.comic.domain.usecases.GetComicUseCase;
+import features.comic.domain.usecases.ComicUseCases;
 import io.codetail.animation.ViewAnimationUtils;
 import io.reactivex.disposables.Disposable;
 import me.vaughandroid.xkcdreader.R;
@@ -37,7 +37,7 @@ public class ViewComicActivity extends CLEActivity {
         return new Intent(context, ViewComicActivity.class).putExtra(COMIC_ID, comicNumber);
     }
 
-    @Inject GetComicUseCase getComicUseCase;
+    @Inject ComicUseCases.GetComic getComicUseCase;
 
     @Inject SchedulerProvider schedulerProvider;
 
@@ -129,7 +129,7 @@ public class ViewComicActivity extends CLEActivity {
     }
 
     private void fetchComic() {
-        Disposable d = getComicUseCase.single(getComicId())
+        Disposable d = getComicUseCase.asSingle(getComicId())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         comic -> {

@@ -14,7 +14,8 @@ import app.CLEActivity;
 import butterknife.BindView;
 import dagger.android.AndroidInjection;
 import features.comic.domain.models.ComicNumber;
-import features.comic.domain.usecases.GetNextPageOfComicsUseCase;
+import features.comic.domain.usecases.ComicUseCases;
+import features.comic.domain.usecases.GetNextPageOfComicsImpl;
 import io.reactivex.disposables.Disposable;
 import me.vaughandroid.xkcdreader.R;
 import rx.SchedulerProvider;
@@ -24,7 +25,7 @@ public class ComicListActivity extends CLEActivity {
 
     public static final int PAGE_SIZE = 20;
 
-    @Inject GetNextPageOfComicsUseCase getNextPageOfComicsUseCase;
+    @Inject ComicUseCases.GetNextPageOfComics getNextPageOfComicsImpl;
 
     @Inject SchedulerProvider schedulerProvider;
 
@@ -82,7 +83,7 @@ public class ComicListActivity extends CLEActivity {
     }
 
     private void fetchNextPageOfComics(ComicNumber first) {
-        Disposable d = getNextPageOfComicsUseCase.single(first, PAGE_SIZE)
+        Disposable d = getNextPageOfComicsImpl.asSingle(first, PAGE_SIZE)
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         comics -> {

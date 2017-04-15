@@ -12,19 +12,20 @@ import features.comic.domain.models.ComicNumber;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
-public class GetNextPageOfComicsUseCase {
+public class GetNextPageOfComicsImpl implements ComicUseCases.GetNextPageOfComics {
 
-    private final GetMaximumComicNumberUseCase getMaximumComicNumberUseCase;
-    private final GetComicUseCase getComicUseCase;
+    private final ComicUseCases.GetMaximumComicNumber getMaximumComicNumber;
+    private final ComicUseCases.GetComic getComic;
 
-    @Inject public GetNextPageOfComicsUseCase(GetMaximumComicNumberUseCase getMaximumComicNumberUseCase,
-                                              GetComicUseCase getComicUseCase) {
-        this.getMaximumComicNumberUseCase = getMaximumComicNumberUseCase;
-        this.getComicUseCase = getComicUseCase;
+    @Inject public GetNextPageOfComicsImpl(ComicUseCases.GetMaximumComicNumber getMaximumComicNumber,
+                                           ComicUseCases.GetComic getComic) {
+        this.getMaximumComicNumber = getMaximumComicNumber;
+        this.getComic = getComic;
     }
 
-    public Single<List<Comic>> single(@NonNull ComicNumber first, int pageSize) {
-        return getMaximumComicNumberUseCase.single()
+    @Override
+    public Single<List<Comic>> asSingle(@NonNull ComicNumber first, int pageSize) {
+        return getMaximumComicNumber.asSingle()
                 .flatMapObservable(maxNumber -> {
                     List<ComicNumber> comicNumbers = new ArrayList<>();
                     ComicNumber currentNumber = first;
@@ -34,7 +35,7 @@ public class GetNextPageOfComicsUseCase {
                     }
                     return Observable.fromIterable(comicNumbers);
                 })
-                .flatMapMaybe((comicNum) -> getComicUseCase.single(comicNum).toMaybe().onErrorComplete())
+                .flatMapMaybe((comicNum) -> getComic.asSingle(comicNum).toMaybe().onErrorComplete())
                 .toSortedList(Comic.ascendingComparator())
                 .map(comics -> {
                     if (comics.isEmpty()) {

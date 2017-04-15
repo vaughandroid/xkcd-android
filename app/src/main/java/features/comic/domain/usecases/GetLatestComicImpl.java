@@ -6,15 +6,16 @@ import features.comic.data.ComicRepository;
 import features.comic.domain.models.Comic;
 import io.reactivex.Single;
 
-public class GetLatestComicUseCase {
+public class GetLatestComicImpl implements ComicUseCases.GetLatestComic {
 
     private final ComicRepository comicRepository;
 
-    @Inject public GetLatestComicUseCase(ComicRepository comicRepository) {
+    @Inject public GetLatestComicImpl(ComicRepository comicRepository) {
         this.comicRepository = comicRepository;
     }
 
-    public Single<Comic> single() {
+    @Override
+    public Single<Comic> asSingle() {
         return comicRepository.getLatestComic();
     }
 }

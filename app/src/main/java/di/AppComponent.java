@@ -6,6 +6,7 @@ import app.XKCDroidApp;
 import dagger.Component;
 import dagger.android.AndroidInjectionModule;
 import features.comic.di.ComicListActivityModule;
+import features.comic.di.ComicUseCasesModule;
 import features.comic.di.ViewComicActivityModule;
 
 @Singleton
@@ -13,6 +14,7 @@ import features.comic.di.ViewComicActivityModule;
         modules = {
                 AppModule.class,
                 AndroidInjectionModule.class,
+                ComicUseCasesModule.class,
                 ComicListActivityModule.class,
                 ViewComicActivityModule.class
         }

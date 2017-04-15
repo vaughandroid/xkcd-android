@@ -9,15 +9,16 @@ import features.comic.domain.models.Comic;
 import features.comic.domain.models.ComicNumber;
 import io.reactivex.Single;
 
-public class GetComicUseCase {
+public class GetComicImpl implements ComicUseCases.GetComic {
 
     private final ComicRepository repository;
 
-    @Inject public GetComicUseCase(ComicRepository repository) {
+    @Inject public GetComicImpl(ComicRepository repository) {
         this.repository = repository;
     }
 
-    public Single<Comic> single(@NonNull ComicNumber comicNumber) {
+    @Override
+    public Single<Comic> asSingle(@NonNull ComicNumber comicNumber) {
         return repository.getComic(comicNumber);
     }
 }

@@ -14,7 +14,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:layout_marginBottom="8dp"
-        android:adjustViewBounds="true" />
+        android:adjustViewBounds="true"
+        tools:src="@drawable/woodpecker"/>
 
     <io.codetail.widget.RevealFrameLayout
         android:id="@+id/comic_alt_text_reveal"

@@ -7,26 +7,23 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import features.comic.domain.models.ComicNumber;
-import features.comic.domain.usecases.GetLatestComicUseCase;
-import features.comic.domain.usecases.GetMaximumComicNumberUseCase;
 import io.reactivex.Single;
 import testutil.StubFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-public class GetMaximumComicNumberUseCaseTest {
+public class GetMaximumComicNumberImplTest {
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    GetLatestComicUseCase getLatestComicUseCase;
+    @Mock ComicUseCases.GetLatestComic getLatestComicUseCase;
 
     @Test public void returnsNumberOfLatestComic() throws Exception {
-        GetMaximumComicNumberUseCase it = new GetMaximumComicNumberUseCase(getLatestComicUseCase);
-        when(getLatestComicUseCase.single()).thenReturn(Single.just(StubFactory.comic(1234)));
+        GetMaximumComicNumberImpl it = new GetMaximumComicNumberImpl(getLatestComicUseCase);
+        when(getLatestComicUseCase.asSingle()).thenReturn(Single.just(StubFactory.comic(1234)));
 
-        ComicNumber maxNumber = it.single().blockingGet();
+        ComicNumber maxNumber = it.asSingle().blockingGet();
 
         assertThat(maxNumber).isEqualTo(ComicNumber.create(1234));
     }
