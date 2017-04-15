@@ -28,7 +28,9 @@ import me.vaughandroid.xkcdreader.R;
 import rx.SchedulerProvider;
 import timber.log.Timber;
 import util.Assertions;
+import util.annotations.NeedsTests;
 
+@NeedsTests
 public class ViewComicActivity extends CLEActivity {
 
     private static final String COMIC_ID = "COMIC_ID";

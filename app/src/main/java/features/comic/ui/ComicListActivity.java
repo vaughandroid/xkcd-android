@@ -20,7 +20,9 @@ import io.reactivex.disposables.Disposable;
 import me.vaughandroid.xkcdreader.R;
 import rx.SchedulerProvider;
 import timber.log.Timber;
+import util.annotations.NeedsTests;
 
+@NeedsTests
 public class ComicListActivity extends CLEActivity {
 
     public static final int PAGE_SIZE = 20;
