@@ -39,15 +39,20 @@ public class ViewComicActivity extends CLEActivity {
         return new Intent(context, ViewComicActivity.class).putExtra(COMIC_ID, comicNumber);
     }
 
-    @Inject ComicUseCases.GetComic getComicUseCase;
+    private ComicUseCases.GetComic getComic;
 
-    @Inject SchedulerProvider schedulerProvider;
+    private SchedulerProvider schedulerProvider;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.view_comic_photoview) PhotoView photoView;
     @BindView(R.id.comic_alt_text) TextView altTextView;
     @BindView(R.id.comic_alt_text_reveal) View altTextRevealView;
+
+    @Inject void inject(ComicUseCases.GetComic getComic, SchedulerProvider schedulerProvider) {
+        this.getComic = getComic;
+        this.schedulerProvider = schedulerProvider;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +136,7 @@ public class ViewComicActivity extends CLEActivity {
     }
 
     private void fetchComic() {
-        Disposable d = getComicUseCase.asSingle(getComicId())
+        Disposable d = getComic.asSingle(getComicId())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         comic -> {

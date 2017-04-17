@@ -35,6 +35,10 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+    }
 }
 
 dependencies {
@@ -50,6 +54,7 @@ dependencies {
     compile 'com.google.dagger:dagger:' + daggerVersion
     compile 'com.google.dagger:dagger-android:' + daggerVersion
     annotationProcessor 'com.google.dagger:dagger-compiler:' + daggerVersion
+    androidTestAnnotationProcessor 'com.google.dagger:dagger-compiler:' + daggerVersion
 
     compile 'io.reactivex.rxjava2:rxjava:2.0.6'
     compile 'com.jakewharton.rxrelay2:rxrelay:2.0.0'
@@ -104,6 +109,7 @@ dependencies {
     def mockitoVersion = "2.7.9"
     testCompile "org.mockito:mockito-core:" + mockitoVersion
     androidTestCompile "org.mockito:mockito-core:" + mockitoVersion
+    androidTestCompile 'com.linkedin.dexmaker:dexmaker-mockito:2.2.0'
 
     def assertJVersion = '2.6.0'
     testCompile 'org.assertj:assertj-core:' + assertJVersion

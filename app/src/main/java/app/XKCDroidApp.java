@@ -12,16 +12,12 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasDispatchingActivityInjector;
 import di.AppModule;
 import di.DaggerAppComponent;
-import retrofit2.Retrofit;
-import rx.SchedulerProvider;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
 public class XKCDroidApp extends Application implements HasDispatchingActivityInjector {
 
     @Inject DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
-    @Inject Retrofit retrofit;
-    @Inject SchedulerProvider schedulerProvider;
 
     @Override
     public void onCreate() {
