@@ -45,7 +45,7 @@ public class ViewComicActivity extends CLEActivity {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fab) FloatingActionButton fab;
-    @BindView(R.id.view_comic_photoview) PhotoView photoView;
+    @BindView(R.id.comic_photoview) PhotoView photoView;
     @BindView(R.id.comic_alt_text) TextView altTextView;
     @BindView(R.id.comic_alt_text_reveal) View altTextRevealView;
 

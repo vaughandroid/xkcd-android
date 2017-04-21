@@ -6,7 +6,8 @@ import features.comic.domain.models.Comic;
 import features.comic.domain.usecases.ComicUseCases;
 import io.reactivex.Single;
 import me.vaughandroid.xkcdreader.R;
-import testutils.CustomViewMatchers;
+import testutils.espresso.CustomAssertions;
+import testutils.espresso.CustomMatchers;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -65,7 +66,7 @@ public class ViewComicActivityRobot {
 
         public Check fabIsShown(boolean isShown) {
             onView(withId(R.id.fab))
-                    .check(CustomViewMatchers.isDisplayed(isShown));
+                    .check(CustomAssertions.isDisplayed(isShown));
             return this;
         }
 
@@ -77,7 +78,13 @@ public class ViewComicActivityRobot {
 
         public Check altTextIsShown(boolean isShown) {
             onView(withId(R.id.comic_alt_text))
-                    .check(CustomViewMatchers.isDisplayed(isShown));
+                    .check(CustomAssertions.isDisplayed(isShown));
+            return this;
+        }
+
+        public Check imageFile(String filePath) {
+            onView(withId(R.id.comic_photoview))
+                    .check(matches(CustomMatchers.imageViewWithBitmap(filePath)));
             return this;
         }
     }

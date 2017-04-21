@@ -8,6 +8,7 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +45,24 @@ public class ViewComicActivityTest {
                 .inject((XKCDroidApp) targetContext.getApplicationContext());
 
         robot = new ViewComicActivityRobot(getComicMock);
+    }
+
+    @Test @Ignore // Not loading test resource correctly. Hmm!
+    public void imageLoading() throws Exception {
+        robot.setup().comic(
+                Comic.builder()
+                        .number(123)
+                        .title("Comic title")
+                        .date(LocalDate.now())
+                        .imageUri(Uri.parse("file:///android_asset/survivorship_bias.png"))
+                        .altText("Alt text")
+                        .build()
+        );
+
+        activityTestRule.launchActivity(ViewComicActivity.intent(ComicNumber.create(123), targetContext));
+
+        robot.check()
+                .imageFile("file:///android_asset/survivorship_bias.png");
     }
 
     @Test

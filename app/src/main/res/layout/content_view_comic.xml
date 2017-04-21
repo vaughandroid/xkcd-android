@@ -9,7 +9,7 @@
     tools:showIn="@layout/activity_view_comic">
 
     <com.github.chrisbanes.photoview.PhotoView
-        android:id="@+id/view_comic_photoview"
+        android:id="@+id/comic_photoview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
