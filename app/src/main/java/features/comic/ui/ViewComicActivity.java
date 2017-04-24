@@ -36,7 +36,8 @@ public class ViewComicActivity extends CLEActivity {
     private static final String COMIC_ID = "COMIC_ID";
 
     public static Intent intent(@NonNull ComicNumber comicNumber, @NonNull Context context) {
-        return new Intent(context, ViewComicActivity.class).putExtra(COMIC_ID, comicNumber);
+        return new Intent(context, ViewComicActivity.class)
+                .putExtra(COMIC_ID, comicNumber);
     }
 
     private ComicUseCases.GetComic getComic;
@@ -49,7 +50,8 @@ public class ViewComicActivity extends CLEActivity {
     @BindView(R.id.comic_alt_text) TextView altTextView;
     @BindView(R.id.comic_alt_text_reveal) View altTextRevealView;
 
-    @Inject void inject(ComicUseCases.GetComic getComic, SchedulerProvider schedulerProvider) {
+    @Inject
+    void inject(ComicUseCases.GetComic getComic, SchedulerProvider schedulerProvider) {
         this.getComic = getComic;
         this.schedulerProvider = schedulerProvider;
     }

@@ -11,20 +11,31 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.threeten.bp.LocalDate;
 
 import app.XKCDroidApp;
 import features.comic.domain.models.Comic;
 import features.comic.domain.models.ComicNumber;
 import features.comic.domain.usecases.ComicUseCases;
+import features.comic.domain.usecases.ComicUseCases.GetComic;
+import io.reactivex.Single;
 import rx.AndroidSchedulerProvider;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
 public class ViewComicActivityTest {
 
     @Rule public ActivityTestRule<ViewComicActivity> activityTestRule = new ActivityTestRule<>(ViewComicActivity.class, false, false);
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+
+    @Mock GetComic getComicStub;
 
     private ViewComicActivityRobot robot;
     private Context targetContext;
@@ -33,30 +44,28 @@ public class ViewComicActivityTest {
     public void setUp() {
         targetContext = InstrumentationRegistry.getTargetContext();
 
-        ComicUseCases.GetComic getComicMock = Mockito.mock(ComicUseCases.GetComic.class);
         DaggerTestViewComicComponent.builder()
-                .module(
-                        new TestViewComicComponent.Module(instance ->
-                                instance.inject(getComicMock, new AndroidSchedulerProvider())
-                        )
-                )
+                .module(new TestViewComicComponent.Module(instance -> instance.inject(
+                        getComicStub,
+                        new AndroidSchedulerProvider())))
                 .build()
                 .inject((XKCDroidApp) targetContext.getApplicationContext());
 
-        robot = new ViewComicActivityRobot(getComicMock);
+        robot = new ViewComicActivityRobot();
     }
+
+    // TODO: Test image is loaded.
 
     @Test
     public void showAndHideAltText() throws Exception {
-        robot.setup().comic(
-                Comic.builder()
-                        .number(123)
-                        .title("Comic title")
-                        .date(LocalDate.now())
-                        .imageUri(Uri.EMPTY)
-                        .altText("Alt text")
-                        .build()
-        );
+        Comic comic =  Comic.builder()
+                .number(123)
+                .title("Comic title")
+                .date(LocalDate.now())
+                .imageUri(Uri.EMPTY)
+                .altText("Alt text")
+                .build();
+        when(getComicStub.asSingle(any())).thenReturn(Single.just(comic));
         activityTestRule.launchActivity(ViewComicActivity.intent(ComicNumber.create(123), targetContext));
 
         robot.check()

@@ -1,5 +1,7 @@
 package features.comic.ui;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,7 +17,6 @@ import butterknife.BindView;
 import dagger.android.AndroidInjection;
 import features.comic.domain.models.ComicNumber;
 import features.comic.domain.usecases.ComicUseCases;
-import features.comic.domain.usecases.GetNextPageOfComicsImpl;
 import io.reactivex.disposables.Disposable;
 import me.vaughandroid.xkcdreader.R;
 import rx.SchedulerProvider;
@@ -25,26 +26,31 @@ import util.annotations.NeedsTests;
 @NeedsTests
 public class ComicListActivity extends CLEActivity {
 
+    public static Intent intent(Context context) {
+        return new Intent(context, ComicListActivity.class);
+    }
+
     public static final int PAGE_SIZE = 20;
 
-    @Inject ComicUseCases.GetNextPageOfComics getNextPageOfComicsImpl;
+    private ComicUseCases.GetNextPageOfComics getNextPageOfComics;
 
-    @Inject SchedulerProvider schedulerProvider;
-
-    // TODO: This is just a proof of concept and can be removed
-    @Inject String activityName;
+    private SchedulerProvider schedulerProvider;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.comic_list_recyclerview) RecyclerView recyclerView;
     private ComicAdapter adapter;
 
+    @Inject
+    void inject(ComicUseCases.GetNextPageOfComics getNextPageOfComics, SchedulerProvider schedulerProvider) {
+        this.getNextPageOfComics = getNextPageOfComics;
+        this.schedulerProvider = schedulerProvider;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-
-        Timber.d("Activity binding test: %s", activityName);
 
         initViews();
 
@@ -85,7 +91,7 @@ public class ComicListActivity extends CLEActivity {
     }
 
     private void fetchNextPageOfComics(ComicNumber first) {
-        Disposable d = getNextPageOfComicsImpl.asSingle(first, PAGE_SIZE)
+        Disposable d = getNextPageOfComics.asSingle(first, PAGE_SIZE)
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         comics -> {
