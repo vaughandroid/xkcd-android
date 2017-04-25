@@ -1,25 +1,27 @@
 package testutils;
 
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.matcher.ViewMatchers;
+import android.view.View;
+
+import org.hamcrest.Matcher;
+
+import me.vaughandroid.xkcdreader.R;
 
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static org.hamcrest.CoreMatchers.not;
 
-public final class CustomViewAssertions {
+public final class CustomViewMatchers {
 
-    private CustomViewAssertions() {
+    private CustomViewMatchers() {
         throw new AssertionError("No instances.");
     }
 
     @NonNull
-    public static ViewAssertion isDisplayed(boolean isShown) {
-        return matches(isShown ? ViewMatchers.isDisplayed() : not(ViewMatchers.isDisplayed()));
+    public static Matcher<View> recyclerViewItem(@IdRes int recyclerViewId, int idx) {
+        return new RecyclerViewMatcher(recyclerViewId).atPosition(idx);
     }
 
-    @NonNull
-    public static ViewAssertion withText(String text) {
-        return matches(ViewMatchers.withText(text));
-    }
 }
