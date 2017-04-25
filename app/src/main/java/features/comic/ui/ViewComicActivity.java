@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -30,14 +31,17 @@ import timber.log.Timber;
 import util.Assertions;
 import util.annotations.NeedsTests;
 
+import static android.support.annotation.VisibleForTesting.PRIVATE;
+
 @NeedsTests
 public class ViewComicActivity extends CLEActivity {
 
-    private static final String COMIC_ID = "COMIC_ID";
+    @VisibleForTesting(otherwise = PRIVATE)
+    static final String EXTRA_COMIC_ID = "COMIC_ID";
 
     public static Intent intent(@NonNull ComicNumber comicNumber, @NonNull Context context) {
         return new Intent(context, ViewComicActivity.class)
-                .putExtra(COMIC_ID, comicNumber);
+                .putExtra(EXTRA_COMIC_ID, comicNumber);
     }
 
     private ComicUseCases.GetComic getComic;
@@ -132,7 +136,7 @@ public class ViewComicActivity extends CLEActivity {
 
     @NonNull
     private ComicNumber getComicId() {
-        ComicNumber comicNumber = (ComicNumber) getIntent().getSerializableExtra(COMIC_ID);
+        ComicNumber comicNumber = (ComicNumber) getIntent().getSerializableExtra(EXTRA_COMIC_ID);
         Assertions.notNull(comicNumber, "Comic ID not found.");
         return comicNumber;
     }
