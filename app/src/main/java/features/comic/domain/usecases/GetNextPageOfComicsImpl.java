@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import features.comic.domain.models.Comic;
 import features.comic.domain.models.ComicNumber;
+import features.comic.domain.models.PagedComics;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -24,7 +25,7 @@ public class GetNextPageOfComicsImpl implements ComicUseCases.GetNextPageOfComic
     }
 
     @Override
-    public Single<List<Comic>> asSingle(@NonNull ComicNumber first, int pageSize) {
+    public Single<PagedComics> asSingle(@NonNull ComicNumber first, int pageSize) {
         return getMaximumComicNumber.asSingle()
                 .flatMapObservable(maxNumber -> {
                     List<ComicNumber> comicNumbers = new ArrayList<>();
@@ -42,6 +43,8 @@ public class GetNextPageOfComicsImpl implements ComicUseCases.GetNextPageOfComic
                         throw new RuntimeException("Failed to fetch any comics");
                     }
                     return comics;
-                });
+                })
+                // TODO: Handle the next comic number properly
+                .map(comics -> PagedComics.of(comics, comics.get(comics.size() - 1).number().next()));
     }
 }

@@ -55,7 +55,7 @@ public class ComicListActivity extends CLEActivity {
         initViews();
 
         showLoading();
-        fetchNextPageOfComics(ComicNumber.create(1));
+        fetchNextPageOfComics(ComicNumber.of(1));
     }
 
     private void initViews() {
@@ -94,8 +94,8 @@ public class ComicListActivity extends CLEActivity {
         Disposable d = getNextPageOfComics.asSingle(first, PAGE_SIZE)
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                        comics -> {
-                            adapter.addComics(comics);
+                        pagedComics -> {
+                            adapter.addPage(pagedComics);
                             showContent();
                         },
                         error -> {

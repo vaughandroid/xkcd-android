@@ -2,7 +2,6 @@ package features.comic.ui;
 
 import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
-import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.intent.matcher.IntentMatchers;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
@@ -16,17 +15,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.threeten.bp.LocalDate;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import app.XKCDroidApp;
-import features.comic.domain.models.Comic;
 import features.comic.domain.models.ComicNumber;
+import features.comic.domain.models.PagedComics;
 import features.comic.domain.usecases.ComicUseCases.GetNextPageOfComics;
 import io.reactivex.Single;
 import rx.AndroidSchedulerProvider;
+import testutil.TestModelFactory;
 
 import static android.app.Activity.RESULT_OK;
 import static android.support.test.espresso.intent.Intents.intended;
@@ -34,8 +30,8 @@ import static android.support.test.espresso.intent.Intents.intending;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static testutil.TestModelFactory.comicsPage;
 import static testutils.CustomIntentMatchers.forActivityClass;
 
 @LargeTest
@@ -70,47 +66,37 @@ public class ComicListActivityTest {
 
     @Test
     public void itemsAreShownInOrder() throws Exception {
-        List<Comic> comics = createComicsList(
-                ComicNumber.create(1000),
-                LocalDate.parse("2017-01-01"),
-                10
-        );
+        PagedComics comics = comicsPage(1001, "2017-01-01", 10, false);
         when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenReturn(Single.just(comics));
 
         activityTestRule.launchActivity(ComicListActivity.intent(targetContext));
 
         robot.check().item(0)
-                .title("title 1000")
-                .number("# 1000")
+                .title("title 1001")
+                .number("# 1001")
                 .date("2017-01-01");
 
         robot.check().item(5)
-                .title("title 1005")
-                .number("# 1005")
+                .title("title 1006")
+                .number("# 1006")
                 .date("2017-01-06");
 
         robot.check().item(9)
-                .title("title 1009")
-                .number("# 1009")
+                .title("title 1010")
+                .number("# 1010")
                 .date("2017-01-10");
     }
 
     @Test
     public void paging() throws Exception {
-        List<Comic> pageOne = createComicsList(
-                ComicNumber.create(1000),
-                LocalDate.parse("2017-01-01"),
-                10
-        );
-        List<Comic> pageTwo = createComicsList(
-                ComicNumber.create(990),
-                LocalDate.parse("2017-01-02"),
-                10
-        );
+        PagedComics pageOne = comicsPage(1000, "2017-01-01", 10, true);
+        PagedComics pageTwo = comicsPage(1010, "2017-01-02", 10, false);
         // TODO: Should match comic numbers explicitly
-        when(getNextPageOfComicsStub.asSingle(any(), anyInt()))
-                .thenReturn(Single.just(pageOne), Single.just(pageTwo));
-
+        //noinspection unchecked
+        when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenReturn(
+                Single.just(pageOne),
+                Single.just(pageTwo)
+        );
 
         activityTestRule.launchActivity(ComicListActivity.intent(targetContext));
 
@@ -124,20 +110,16 @@ public class ComicListActivityTest {
         robot.perform().item(10).scrollTo();
 
         robot.check()
-                .itemCount(21)
+                .itemCount(20)
                 .item(10)
-                        .title("title 990")
-                        .number("# 990")
+                        .title("title 1010")
+                        .number("# 1010")
                         .date("2017-01-02");
     }
 
     @Test
     public void clickOnItemShowsComic() throws Exception {
-        List<Comic> comics = createComicsList(
-                ComicNumber.create(1000),
-                LocalDate.parse("2017-01-01"),
-                10
-        );
+        PagedComics comics = comicsPage(1000, "2017-01-01", 10, false);
         when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenReturn(Single.just(comics));
 
         activityTestRule.launchActivity(ComicListActivity.intent(targetContext));
@@ -149,34 +131,15 @@ public class ComicListActivityTest {
 
         intended(allOf(
                 forActivityClass(ViewComicActivity.class),
-                IntentMatchers.hasExtra(ViewComicActivity.EXTRA_COMIC_ID, ComicNumber.create(1000))
+                IntentMatchers.hasExtra(ViewComicActivity.EXTRA_COMIC_ID, ComicNumber.of(1000))
         ));
 
         robot.perform().item(9).click();
 
         intended(allOf(
                 forActivityClass(ViewComicActivity.class),
-                IntentMatchers.hasExtra(ViewComicActivity.EXTRA_COMIC_ID, ComicNumber.create(1009))
+                IntentMatchers.hasExtra(ViewComicActivity.EXTRA_COMIC_ID, ComicNumber.of(1009))
         ));
     }
 
-    private static List<Comic> createComicsList(ComicNumber comicNumber, LocalDate localDate, int count) {
-        List<Comic> comics = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            comics.add(createComic(comicNumber, localDate));
-            comicNumber = comicNumber.next();
-            localDate = localDate.plusDays(1);
-        }
-        return comics;
-    }
-
-    private static Comic createComic(ComicNumber comicNumber, LocalDate localDate) {
-        return Comic.builder()
-                .number(comicNumber)
-                .title("title " + comicNumber.intVal())
-                .altText("alt text " + comicNumber.intVal())
-                .date(localDate)
-                .imageUri(Uri.parse("file:///android_asset/survivorship_bias.png"))
-                .build();
-    }
 }

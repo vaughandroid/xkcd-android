@@ -35,7 +35,7 @@ public abstract class Comic {
 
         public abstract Builder number(ComicNumber number);
         public Builder number(int number) {
-            return number(ComicNumber.create(number));
+            return number(ComicNumber.of(number));
         }
 
         public abstract Builder title(String title);

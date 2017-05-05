@@ -12,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.threeten.bp.LocalDate;
@@ -20,7 +19,6 @@ import org.threeten.bp.LocalDate;
 import app.XKCDroidApp;
 import features.comic.domain.models.Comic;
 import features.comic.domain.models.ComicNumber;
-import features.comic.domain.usecases.ComicUseCases;
 import features.comic.domain.usecases.ComicUseCases.GetComic;
 import io.reactivex.Single;
 import rx.AndroidSchedulerProvider;
@@ -66,7 +64,7 @@ public class ViewComicActivityTest {
                 .altText("Alt text")
                 .build();
         when(getComicStub.asSingle(any())).thenReturn(Single.just(comic));
-        activityTestRule.launchActivity(ViewComicActivity.intent(ComicNumber.create(123), targetContext));
+        activityTestRule.launchActivity(ViewComicActivity.intent(ComicNumber.of(123), targetContext));
 
         robot.check()
                 .fabIsShown(true)

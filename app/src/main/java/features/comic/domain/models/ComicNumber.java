@@ -9,18 +9,18 @@ import java.io.Serializable;
 @AutoValue
 public abstract class ComicNumber implements Serializable, Comparable<ComicNumber> {
 
-    public static ComicNumber create(int intVal) {
+    public static ComicNumber of(int intVal) {
         return new AutoValue_ComicNumber(intVal);
     }
 
     public abstract int intVal();
 
     public ComicNumber next() {
-        return ComicNumber.create(intVal() + 1);
+        return ComicNumber.of(intVal() + 1);
     }
 
     public ComicNumber previous() {
-        return ComicNumber.create(intVal() - 1);
+        return ComicNumber.of(intVal() - 1);
     }
 
     @Override

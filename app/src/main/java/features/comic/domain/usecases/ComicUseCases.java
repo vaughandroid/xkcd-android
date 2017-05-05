@@ -6,6 +6,7 @@ import java.util.List;
 
 import features.comic.domain.models.Comic;
 import features.comic.domain.models.ComicNumber;
+import features.comic.domain.models.PagedComics;
 import io.reactivex.Single;
 
 public interface ComicUseCases {
@@ -23,6 +24,6 @@ public interface ComicUseCases {
     }
 
     interface GetNextPageOfComics {
-        Single<List<Comic>> asSingle(@NonNull ComicNumber first, int pageSize);
+        Single<PagedComics> asSingle(@NonNull ComicNumber first, int pageSize);
     }
 }

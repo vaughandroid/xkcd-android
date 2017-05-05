@@ -8,7 +8,7 @@ import org.mockito.junit.MockitoRule;
 
 import features.comic.domain.models.ComicNumber;
 import io.reactivex.Single;
-import testutil.StubFactory;
+import testutil.TestModelFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -21,11 +21,11 @@ public class GetMaximumComicNumberImplTest {
 
     @Test public void returnsNumberOfLatestComic() throws Exception {
         GetMaximumComicNumberImpl it = new GetMaximumComicNumberImpl(getLatestComicUseCase);
-        when(getLatestComicUseCase.asSingle()).thenReturn(Single.just(StubFactory.comic(1234)));
+        when(getLatestComicUseCase.asSingle()).thenReturn(Single.just(TestModelFactory.comic(1234)));
 
         ComicNumber maxNumber = it.asSingle().blockingGet();
 
-        assertThat(maxNumber).isEqualTo(ComicNumber.create(1234));
+        assertThat(maxNumber).isEqualTo(ComicNumber.of(1234));
     }
 
 }
