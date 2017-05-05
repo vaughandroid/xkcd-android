@@ -7,6 +7,8 @@ import android.support.test.espresso.contrib.RecyclerViewActions;
 import javax.inject.Inject;
 
 import me.vaughandroid.xkcdreader.R;
+import testutils.CustomViewAssertions;
+import testutils.CustomViewMatchers;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -37,6 +39,13 @@ public class ComicListActivityRobot {
     }
 
     public class Check {
+
+        public Check itemCount(int count) {
+            onView(withId(R.id.comic_list_recyclerview))
+                    .check(matches(CustomViewMatchers.recyclerViewWithItemCount(count)));
+            return this;
+        }
+
         public ItemCheck item(int idx) {
             return new ItemCheck(idx);
         }
@@ -65,7 +74,8 @@ public class ComicListActivityRobot {
             }
 
             private void checkTextView(String text, int textViewId) {
-                scrollToAndGetItemInteraction(idx).check(matches(hasDescendant(allOf(withId(textViewId), withText(text)))));
+                scrollToAndGetItemInteraction(idx)
+                        .check(matches(hasDescendant(allOf(withId(textViewId), withText(text)))));
             }
 
         }
@@ -73,10 +83,28 @@ public class ComicListActivityRobot {
 
     public class Perform {
 
-        public Perform clickOnItem(int idx) {
-            scrollToAndGetItemInteraction(idx)
-                    .perform(click());
-            return this;
+        public ItemPerform item(int idx) {
+            return new ItemPerform(idx);
+        }
+
+        public class ItemPerform {
+
+            private final int idx;
+
+            ItemPerform(int idx) {
+                this.idx = idx;
+            }
+
+            public ItemPerform click() {
+                scrollToAndGetItemInteraction(idx)
+                        .perform(ViewActions.click());
+                return this;
+            }
+
+            public ItemPerform scrollTo() {
+                scrollToAndGetItemInteraction(idx);
+                return this;
+            }
         }
     }
 

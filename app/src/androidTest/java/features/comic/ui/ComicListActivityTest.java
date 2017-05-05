@@ -34,6 +34,7 @@ import static android.support.test.espresso.intent.Intents.intending;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static testutils.CustomIntentMatchers.forActivityClass;
 
@@ -49,8 +50,7 @@ public class ComicListActivityTest {
     private ComicListActivityRobot robot;
     private Context targetContext;
 
-    // TODO: Test paging
-    // TODO: Test ImageViews?
+    // TODO: Test images are loaded correctly
     // TODO: How much can/should be moved into the Robot?
 
     @Before
@@ -96,6 +96,42 @@ public class ComicListActivityTest {
     }
 
     @Test
+    public void paging() throws Exception {
+        List<Comic> pageOne = createComicsList(
+                ComicNumber.create(1000),
+                LocalDate.parse("2017-01-01"),
+                10
+        );
+        List<Comic> pageTwo = createComicsList(
+                ComicNumber.create(990),
+                LocalDate.parse("2017-01-02"),
+                10
+        );
+        // TODO: Should match comic numbers explicitly
+        when(getNextPageOfComicsStub.asSingle(any(), anyInt()))
+                .thenReturn(Single.just(pageOne), Single.just(pageTwo));
+
+
+        activityTestRule.launchActivity(ComicListActivity.intent(targetContext));
+
+        robot.check()
+                .itemCount(11)
+                .item(0)
+                        .title("title 1000")
+                        .number("# 1000")
+                        .date("2017-01-01");
+
+        robot.perform().item(10).scrollTo();
+
+        robot.check()
+                .itemCount(21)
+                .item(10)
+                        .title("title 990")
+                        .number("# 990")
+                        .date("2017-01-02");
+    }
+
+    @Test
     public void clickOnItemShowsComic() throws Exception {
         List<Comic> comics = createComicsList(
                 ComicNumber.create(1000),
@@ -109,14 +145,14 @@ public class ComicListActivityTest {
         intending(forActivityClass(ViewComicActivity.class))
                 .respondWith(new ActivityResult(RESULT_OK, null));
 
-        robot.perform().clickOnItem(0);
+        robot.perform().item(0).click();
 
         intended(allOf(
                 forActivityClass(ViewComicActivity.class),
                 IntentMatchers.hasExtra(ViewComicActivity.EXTRA_COMIC_ID, ComicNumber.create(1000))
         ));
 
-        robot.perform().clickOnItem(9);
+        robot.perform().item(9).click();
 
         intended(allOf(
                 forActivityClass(ViewComicActivity.class),
