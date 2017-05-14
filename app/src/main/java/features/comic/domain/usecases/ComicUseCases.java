@@ -2,8 +2,6 @@ package features.comic.domain.usecases;
 
 import android.support.annotation.NonNull;
 
-import java.util.List;
-
 import features.comic.domain.models.Comic;
 import features.comic.domain.models.ComicNumber;
 import features.comic.domain.models.PagedComics;
