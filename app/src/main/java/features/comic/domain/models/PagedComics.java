@@ -9,16 +9,17 @@ import java.util.List;
 @AutoValue
 public abstract class PagedComics {
 
-    public static PagedComics of(List<Comic> comics) {
-        return of(comics, null);
+    public static PagedComics of(List<ComicResult> items) {
+        return of(items, null);
     }
 
-    public static PagedComics of(List<Comic> comics, @Nullable ComicNumber nextComicNumber) {
-        return new AutoValue_PagedComics(comics, nextComicNumber);
+    public static PagedComics of(List<ComicResult> items, @Nullable ComicNumber nextComicNumber) {
+        return new AutoValue_PagedComics(items, nextComicNumber);
     }
 
-    public abstract List<Comic> comics();
+    public abstract List<ComicResult> items();
 
+    // TODO: Can make this a computed value now.
     @Nullable
     public abstract ComicNumber nextComicNumber();
 }

@@ -15,6 +15,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import features.comic.domain.models.Comic;
 import features.comic.domain.models.ComicNumber;
+import features.comic.domain.models.ComicResult;
 import features.comic.domain.models.PagedComics;
 import me.vaughandroid.xkcdreader.R;
 
@@ -32,7 +33,7 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
         void onLoadMore(ComicNumber nextComicNumber);
     }
 
-    private final List<Comic> comics = new ArrayList<>();
+    private final List<ComicResult> items = new ArrayList<>();
 
     private final Context context;
     private final LayoutInflater layoutInflater;
@@ -54,7 +55,7 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
     }
 
     public void addPage(PagedComics page) {
-        comics.addAll(page.comics());
+        items.addAll(page.items());
         nextComicNumber = page.nextComicNumber();
         isLoading = false;
         notifyDataSetChanged();
@@ -73,7 +74,7 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int idx) {
         if (viewHolder instanceof ComicViewHolder) {
-            ((ComicViewHolder) viewHolder).setComic(comics.get(idx));
+            ((ComicViewHolder) viewHolder).setComic(items.get(idx).join(comic -> comic, missingComic -> null));
         } else if (viewHolder instanceof LoadingViewHolder) {
             if (!isLoading) {
                 onLoadMoreListener.onLoadMore(nextComicNumber);
@@ -84,7 +85,7 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return comics.size() + (canLoadMoreComics() ? 1 : 0);
+        return items.size() + (canLoadMoreComics() ? 1 : 0);
     }
 
     private boolean canLoadMoreComics() {
@@ -94,14 +95,15 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
     @Override
     public long getItemId(int position) {
         if (getItemViewType(position) == ITEM_COMIC) {
-            return comics.get(position).number().intVal();
+            return items.get(position).number().intVal();
         }
         return -1;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return position < comics.size() || !canLoadMoreComics() ? ITEM_COMIC : ITEM_LOADING;
+        // TODO: Support MissingComics
+        return position < items.size() || !canLoadMoreComics() ? ITEM_COMIC : ITEM_LOADING;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

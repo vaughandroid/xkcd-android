@@ -12,10 +12,6 @@ import java.util.Comparator;
 @AutoValue
 public abstract class Comic {
 
-    public static Comparator<? super Comic> ascendingComparator() {
-        return (c1, c2) -> c1.number().compareTo(c2.number());
-    }
-
     public static Builder builder() {
         return new AutoValue_Comic.Builder();
     }

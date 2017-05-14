@@ -10,6 +10,7 @@ import io.reactivex.Single;
 public interface ComicUseCases {
 
     interface GetComic {
+        // TODO: Support MissingComics?
         Single<Comic> asSingle(@NonNull ComicNumber comicNumber);
     }
 
