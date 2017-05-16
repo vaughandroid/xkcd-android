@@ -21,6 +21,7 @@ import features.comic.domain.models.PagedComics;
 import me.vaughandroid.xkcdreader.R;
 
 
+// TODO: Can use Robolectric to test this
 class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
 
     private static final int ITEM_COMIC = 0;
@@ -109,10 +110,10 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
 
     @Override
     public long getItemId(int position) {
-        if (getItemViewType(position) == ITEM_COMIC) {
-            return items.get(position).number().intVal();
+        if (position == items.size()) {
+            return -1;
         }
-        return -1;
+        return items.get(position).number().intVal();
     }
 
     @Override
@@ -156,7 +157,7 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
     class MissingComicViewHolder extends ViewHolder {
 
         @BindView(R.id.missing_comic_number) TextView numberView;
-        
+
         MissingComicViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
