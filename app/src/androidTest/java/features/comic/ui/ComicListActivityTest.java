@@ -2,6 +2,8 @@ package features.comic.ui;
 
 import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.intent.matcher.IntentMatchers;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
@@ -16,8 +18,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import app.XKCDroidApp;
 import features.comic.domain.models.ComicNumber;
+import features.comic.domain.models.ComicResult;
 import features.comic.domain.models.PagedComics;
 import features.comic.domain.usecases.ComicUseCases.GetNextPageOfComics;
 import io.reactivex.Single;
@@ -27,11 +34,15 @@ import testutil.TestModelFactory;
 import static android.app.Activity.RESULT_OK;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.Intents.intending;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
+import static testutil.TestModelFactory.comic;
 import static testutil.TestModelFactory.comicsPage;
+import static testutil.TestModelFactory.missingComic;
 import static testutils.CustomIntentMatchers.forActivityClass;
 
 @LargeTest
@@ -118,7 +129,7 @@ public class ComicListActivityTest {
     }
 
     @Test
-    public void clickOnItemShowsComic() throws Exception {
+    public void clickOnComicItemShowsComic() throws Exception {
         PagedComics comics = comicsPage(1000, "2017-01-01", 10, false);
         when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenReturn(Single.just(comics));
 
@@ -127,18 +138,34 @@ public class ComicListActivityTest {
         intending(forActivityClass(ViewComicActivity.class))
                 .respondWith(new ActivityResult(RESULT_OK, null));
 
-        robot.perform().item(0).click();
+        robot.perform().item(7).click();
 
         intended(allOf(
                 forActivityClass(ViewComicActivity.class),
-                IntentMatchers.hasExtra(ViewComicActivity.EXTRA_COMIC_ID, ComicNumber.of(1000))
+                IntentMatchers.hasExtra(ViewComicActivity.EXTRA_COMIC_ID, ComicNumber.of(1007))
         ));
+    }
 
-        robot.perform().item(9).click();
+    @Test
+    public void clickOnMissingComicLaunchesBrowser() throws Exception {
+        List<ComicResult> items = Arrays.asList(
+                ComicResult.of(comic(123)),
+                ComicResult.of(missingComic(124)),
+                ComicResult.of(comic(125))
+        );
+        PagedComics pagedComics = PagedComics.of(items);
+        when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenReturn(Single.just(pagedComics));
+
+        activityTestRule.launchActivity(ComicListActivity.intent(targetContext));
+
+        intending(hasAction(Intent.ACTION_VIEW))
+                .respondWith(new ActivityResult(RESULT_OK, null));
+
+        robot.perform().item(1).click();
 
         intended(allOf(
-                forActivityClass(ViewComicActivity.class),
-                IntentMatchers.hasExtra(ViewComicActivity.EXTRA_COMIC_ID, ComicNumber.of(1009))
+                hasAction(Intent.ACTION_VIEW),
+                hasData(Uri.parse("https://xkcd.com/124/"))
         ));
     }
 

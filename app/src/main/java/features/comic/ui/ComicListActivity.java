@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -22,6 +21,7 @@ import io.reactivex.disposables.Disposable;
 import me.vaughandroid.xkcdreader.R;
 import rx.SchedulerProvider;
 import timber.log.Timber;
+import util.IntentUtils;
 import util.annotations.NeedsTests;
 
 @NeedsTests
@@ -70,7 +70,7 @@ public class ComicListActivity extends CLEActivity {
         adapter = new ComicAdapter(
                 this,
                 comic -> startActivity(ViewComicActivity.intent(comic.number(), this)),
-                missingComic -> Toast.makeText(this, "Clicked " + missingComic.number().intVal(), Toast.LENGTH_SHORT).show(), // XXX
+                missingComic -> startActivity(IntentUtils.browserIntent(missingComic.uri())),
                 nextComicNumber -> fetchNextPageOfComics(nextComicNumber)
         );
         recyclerView.setAdapter(adapter);

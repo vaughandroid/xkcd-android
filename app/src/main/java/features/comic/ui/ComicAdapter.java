@@ -25,8 +25,8 @@ import me.vaughandroid.xkcdreader.R;
 class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
 
     private static final int ITEM_COMIC = 0;
-    private static final int ITEM_LOADING = 1;
-    private static final int ITEM_MISSING_COMIC = 2;
+    private static final int ITEM_MISSING_COMIC = 1;
+    private static final int ITEM_LOADING = 2;
 
     public interface OnComicClickedListener {
         void onComicClicked(Comic comic);
@@ -91,10 +91,10 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
                 isLoading = true;
             }
         } else {
-            //noinspection ConstantConditions
+            //noinspection ConstantConditions,Convert2MethodRef
             items.get(idx).continued(
-                    ((ComicViewHolder) viewHolder)::setComic,
-                    ((MissingComicViewHolder) viewHolder)::setMissingComic
+                    comic -> ((ComicViewHolder) viewHolder).setComic(comic),
+                    missingComic -> ((MissingComicViewHolder) viewHolder).setMissingComic(missingComic)
             );
         }
     }

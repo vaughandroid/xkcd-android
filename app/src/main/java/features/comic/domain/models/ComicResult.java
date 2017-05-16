@@ -34,25 +34,26 @@ public abstract class ComicResult {
         return join(Comic::number, MissingComic::number);
     }
 
-    public void continued(Consumer<Comic> continuationLeft, Consumer<MissingComic> continuationRight) {
+    public void continued(Consumer<Comic> continuationComic,
+                          Consumer<MissingComic> continuationMissing) {
         try {
             if (comic() != null) {
-                continuationLeft.accept(comic());
+                continuationComic.accept(comic());
             } else {
-                continuationRight.accept(missingComic());
+                continuationMissing.accept(missingComic());
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public <T> T join(Function<Comic, T> joinLeft, Function<MissingComic, T> joinRight) {
+    public <T> T join(Function<Comic, T> joinComic, Function<MissingComic, T> joinMissing) {
         T result;
         try {
             if (comic() != null) {
-                result = joinLeft.apply(comic());
+                result = joinComic.apply(comic());
             } else {
-                result = joinRight.apply(missingComic());
+                result = joinMissing.apply(missingComic());
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

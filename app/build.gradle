@@ -106,6 +106,8 @@ dependencies {
     testCompile 'junit:junit:' +  jUnitVersion
     androidTestCompile 'junit:junit:' +  jUnitVersion
 
+    testCompile "org.robolectric:robolectric:3.3.2"
+
     def mockitoVersion = "2.7.9"
     testCompile "org.mockito:mockito-core:" + mockitoVersion
     androidTestCompile "org.mockito:mockito-core:" + mockitoVersion

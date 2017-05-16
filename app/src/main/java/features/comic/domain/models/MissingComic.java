@@ -1,5 +1,7 @@
 package features.comic.domain.models;
 
+import android.net.Uri;
+
 import com.google.auto.value.AutoValue;
 
 @AutoValue
@@ -10,4 +12,8 @@ public abstract class MissingComic {
     }
 
     public abstract ComicNumber number();
+
+    public Uri uri() {
+        return Uri.parse("https://xkcd.com/" + number().intVal() + "/");
+    }
 }
