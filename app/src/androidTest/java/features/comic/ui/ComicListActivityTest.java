@@ -44,6 +44,7 @@ import static testutil.TestModelFactory.comic;
 import static testutil.TestModelFactory.comicsPage;
 import static testutil.TestModelFactory.missingComic;
 import static testutils.CustomIntentMatchers.forActivityClass;
+import static testutils.CustomIntentMatchers.forBrowser;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -163,10 +164,7 @@ public class ComicListActivityTest {
 
         robot.perform().item(1).click();
 
-        intended(allOf(
-                hasAction(Intent.ACTION_VIEW),
-                hasData(Uri.parse("https://xkcd.com/124/"))
-        ));
+        intended(forBrowser("https://xkcd.com/124/"));
     }
 
 }
