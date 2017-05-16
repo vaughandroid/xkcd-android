@@ -16,6 +16,7 @@ import butterknife.ButterKnife;
 import features.comic.domain.models.Comic;
 import features.comic.domain.models.ComicNumber;
 import features.comic.domain.models.ComicResult;
+import features.comic.domain.models.MissingComic;
 import features.comic.domain.models.PagedComics;
 import me.vaughandroid.xkcdreader.R;
 
@@ -24,9 +25,14 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
 
     private static final int ITEM_COMIC = 0;
     private static final int ITEM_LOADING = 1;
+    private static final int ITEM_MISSING_COMIC = 2;
 
     public interface OnComicClickedListener {
         void onComicClicked(Comic comic);
+    }
+
+    public interface OnMissingComicClickedListener {
+        void onMissingComicClicked(MissingComic missingComic);
     }
 
     public interface OnLoadMoreListener {
@@ -39,6 +45,7 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
     private final LayoutInflater layoutInflater;
 
     private final OnComicClickedListener onComicClickedListener;
+    private final OnMissingComicClickedListener onMissingComicClickedListener;
     private final OnLoadMoreListener onLoadMoreListener;
 
     private boolean isLoading;
@@ -46,10 +53,12 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
 
     public ComicAdapter(Context context,
                         OnComicClickedListener onComicClickedListener,
+                        OnMissingComicClickedListener onMissingComicClickedListener,
                         OnLoadMoreListener onLoadMoreListener) {
         this.context = context;
         layoutInflater = LayoutInflater.from(context);
         this.onComicClickedListener = onComicClickedListener;
+        this.onMissingComicClickedListener = onMissingComicClickedListener;
         this.onLoadMoreListener = onLoadMoreListener;
         setHasStableIds(true);
     }
@@ -66,6 +75,8 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
         switch (viewType) {
             case ITEM_COMIC:
                 return new ComicViewHolder(layoutInflater.inflate(R.layout.item_comic, parent, false));
+            case ITEM_MISSING_COMIC:
+                return new MissingComicViewHolder(layoutInflater.inflate(R.layout.item_missing_comic, parent, false));
             default:
                 return new LoadingViewHolder(layoutInflater.inflate(android.R.layout.simple_list_item_1, parent, false));
         }
@@ -73,13 +84,17 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int idx) {
-        if (viewHolder instanceof ComicViewHolder) {
-            ((ComicViewHolder) viewHolder).setComic(items.get(idx).join(comic -> comic, missingComic -> null));
-        } else if (viewHolder instanceof LoadingViewHolder) {
+        if (viewHolder instanceof LoadingViewHolder) {
             if (!isLoading) {
                 onLoadMoreListener.onLoadMore(nextComicNumber);
                 isLoading = true;
             }
+        } else {
+            //noinspection ConstantConditions
+            items.get(idx).continued(
+                    ((ComicViewHolder) viewHolder)::setComic,
+                    ((MissingComicViewHolder) viewHolder)::setMissingComic
+            );
         }
     }
 
@@ -102,8 +117,10 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        // TODO: Support MissingComics
-        return position < items.size() || !canLoadMoreComics() ? ITEM_COMIC : ITEM_LOADING;
+        if (position == items.size()) {
+            return ITEM_LOADING;
+        }
+        return items.get(position).join(comic -> ITEM_COMIC, missingComic -> ITEM_MISSING_COMIC);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
@@ -131,6 +148,25 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
             itemView.setOnClickListener(v -> {
                 if (onComicClickedListener != null) {
                     onComicClickedListener.onComicClicked(comic);
+                }
+            });
+        }
+    }
+
+    class MissingComicViewHolder extends ViewHolder {
+
+        @BindView(R.id.missing_comic_number) TextView numberView;
+        
+        MissingComicViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
+        public void setMissingComic(MissingComic missingComic) {
+            numberView.setText(context.getString(R.string.comic_number, missingComic.number().intVal()));
+            itemView.setOnClickListener(v -> {
+                if (onMissingComicClickedListener != null) {
+                    onMissingComicClickedListener.onMissingComicClicked(missingComic);
                 }
             });
         }
