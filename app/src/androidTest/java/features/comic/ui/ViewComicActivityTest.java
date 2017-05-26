@@ -55,7 +55,7 @@ public class ViewComicActivityTest {
 
     @Test
     public void showAndHideAltText() throws Exception {
-        Comic comic =  Comic.builder()
+        Comic comic = Comic.builder()
                 .number(123)
                 .title("Comic title")
                 .date(LocalDate.now())
@@ -63,7 +63,7 @@ public class ViewComicActivityTest {
                 .altText("Alt text")
                 .build();
         when(getComicStub.asSingle(any())).thenReturn(Single.just(comic));
-        activityTestRule.launchActivity(ViewComicActivity.intent(ComicNumber.of(123), targetContext));
+        launchActivity();
 
         robot.check()
                 .fabIsShown(true)
@@ -81,6 +81,10 @@ public class ViewComicActivityTest {
         robot.check()
                 .fabIsShown(true)
                 .altTextIsShown(false);
+    }
+
+    private ViewComicActivity launchActivity() {
+        return activityTestRule.launchActivity(ViewComicActivity.intent(ComicNumber.of(123), targetContext));
     }
 
 }

@@ -1,10 +1,7 @@
 package features.comic.ui;
 
-import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
-import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.intent.matcher.IntentMatchers;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.filters.LargeTest;
 import android.support.test.runner.AndroidJUnit4;
@@ -29,20 +26,13 @@ import io.reactivex.Single;
 import rx.AndroidSchedulerProvider;
 import testutils.TestAppRule;
 
-import static android.app.Activity.RESULT_OK;
-import static android.support.test.espresso.intent.Intents.intended;
-import static android.support.test.espresso.intent.Intents.intending;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static junit.framework.Assert.fail;
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static testutil.TestModelFactory.comicResult;
 import static testutil.TestModelFactory.comicsPage;
 import static testutil.TestModelFactory.missingComicResult;
-import static testutils.CustomIntentMatchers.forActivityClass;
-import static testutils.CustomIntentMatchers.forBrowser;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
@@ -58,7 +48,6 @@ public class ComicListActivityTest {
     private Context targetContext;
 
     // TODO: Test images are loaded correctly
-    // TODO: How much can/should be moved into the Robot?
 
     @Before
     public void setUp() {
@@ -139,15 +128,11 @@ public class ComicListActivityTest {
 
         launchActivity();
 
-        intending(forActivityClass(ViewComicActivity.class))
-                .respondWith(new ActivityResult(RESULT_OK, null));
+        robot.setup().willOpenViewComicActivity();
 
-        robot.perform().item(7).click();
+        robot.perform().item(7).open();
 
-        intended(allOf(
-                forActivityClass(ViewComicActivity.class),
-                IntentMatchers.hasExtra(ViewComicActivity.EXTRA_COMIC_ID, ComicNumber.of(1007))
-        ));
+        robot.check().openedViewComicActivity(1007);
     }
 
     @Test
@@ -162,12 +147,11 @@ public class ComicListActivityTest {
 
         launchActivity();
 
-        intending(hasAction(Intent.ACTION_VIEW))
-                .respondWith(new ActivityResult(RESULT_OK, null));
+        robot.setup().willOpenBrowser();
 
-        robot.perform().item(1).click();
+        robot.perform().item(1).open();
 
-        intended(forBrowser("https://xkcd.com/124/"));
+        robot.check().openedBrowser("https://xkcd.com/124/");
     }
 
     private void launchActivity() {
