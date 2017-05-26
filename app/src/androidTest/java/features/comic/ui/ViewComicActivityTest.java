@@ -7,7 +7,6 @@ import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -18,12 +17,12 @@ import org.mockito.junit.MockitoRule;
 import org.threeten.bp.LocalDate;
 
 import app.TestApp;
-import app.XKCDroidApp;
 import features.comic.domain.models.Comic;
 import features.comic.domain.models.ComicNumber;
 import features.comic.domain.usecases.ComicUseCases.GetComic;
 import io.reactivex.Single;
 import rx.AndroidSchedulerProvider;
+import testutils.TestAppRule;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -32,6 +31,7 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class ViewComicActivityTest {
 
+    @Rule public TestAppRule testAppRule = new TestAppRule();
     @Rule public ActivityTestRule<ViewComicActivity> activityTestRule = new ActivityTestRule<>(ViewComicActivity.class, false, false);
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -49,11 +49,6 @@ public class ViewComicActivityTest {
                 new AndroidSchedulerProvider());
 
         robot = new ViewComicActivityRobot();
-    }
-
-    @After
-    public void tearDown() {
-        TestApp.activityInjector = null;
     }
 
     // TODO: Test image is loaded.
