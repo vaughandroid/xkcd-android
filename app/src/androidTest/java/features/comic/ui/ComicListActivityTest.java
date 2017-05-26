@@ -1,5 +1,6 @@
 package features.comic.ui;
 
+import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.filters.LargeTest;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,7 +22,9 @@ import org.mockito.junit.MockitoRule;
 import java.util.Arrays;
 import java.util.List;
 
+import app.TestApp;
 import app.XKCDroidApp;
+import dagger.android.AndroidInjector;
 import features.comic.domain.models.ComicNumber;
 import features.comic.domain.models.ComicResult;
 import features.comic.domain.models.PagedComics;
@@ -62,15 +66,17 @@ public class ComicListActivityTest {
     public void setUp() {
         targetContext = InstrumentationRegistry.getTargetContext();
 
-        DaggerTestComicListComponent.builder()
-                .module(new TestComicListComponent.Module(instance -> instance.inject(
-                        getNextPageOfComicsStub,
-                        new AndroidSchedulerProvider()
-                )))
-                .build()
-                .inject((XKCDroidApp) targetContext.getApplicationContext());
+        TestApp.activityInjector = instance -> ((ComicListActivity) instance).inject(
+                getNextPageOfComicsStub,
+                new AndroidSchedulerProvider()
+        );
 
         robot = new ComicListActivityRobot();
+    }
+
+    @After
+    public void tearDown() {
+        TestApp.activityInjector = null;
     }
 
     @Test

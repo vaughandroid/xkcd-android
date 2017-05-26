@@ -7,6 +7,7 @@ import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,6 +17,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.threeten.bp.LocalDate;
 
+import app.TestApp;
 import app.XKCDroidApp;
 import features.comic.domain.models.Comic;
 import features.comic.domain.models.ComicNumber;
@@ -42,14 +44,16 @@ public class ViewComicActivityTest {
     public void setUp() {
         targetContext = InstrumentationRegistry.getTargetContext();
 
-        DaggerTestViewComicComponent.builder()
-                .module(new TestViewComicComponent.Module(instance -> instance.inject(
-                        getComicStub,
-                        new AndroidSchedulerProvider())))
-                .build()
-                .inject((XKCDroidApp) targetContext.getApplicationContext());
+        TestApp.activityInjector = instance -> ((ViewComicActivity) instance).inject(
+                getComicStub,
+                new AndroidSchedulerProvider());
 
         robot = new ViewComicActivityRobot();
+    }
+
+    @After
+    public void tearDown() {
+        TestApp.activityInjector = null;
     }
 
     // TODO: Test image is loaded.

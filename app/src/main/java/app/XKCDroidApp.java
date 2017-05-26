@@ -18,7 +18,7 @@ import timber.log.Timber.DebugTree;
 
 public class XKCDroidApp extends Application implements HasActivityInjector {
 
-    @Inject DispatchingAndroidInjector<Activity> androidInjector;
+    @Inject DispatchingAndroidInjector<Activity> dispatchingActivityInjector;
 
     @Override
     public void onCreate() {
@@ -38,6 +38,6 @@ public class XKCDroidApp extends Application implements HasActivityInjector {
 
     @Override
     public AndroidInjector<Activity> activityInjector() {
-        return androidInjector;
+        return dispatchingActivityInjector;
     }
 }
