@@ -39,7 +39,8 @@ import static testutil.TestModelFactory.missingComicResult;
 public class ComicListActivityTest {
 
     @Rule public TestAppRule testAppRule = new TestAppRule();
-    @Rule public IntentsTestRule<ComicListActivity> activityTestRule = new IntentsTestRule<>(ComicListActivity.class, false, false);
+    @Rule public IntentsTestRule<ComicListActivity> activityTestRule =
+            new IntentsTestRule<>(ComicListActivity.class, false, false);
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock GetNextPageOfComics getNextPageOfComicsStub;
@@ -62,7 +63,7 @@ public class ComicListActivityTest {
     }
 
     @Test
-    public void itemsAreShownInOrder() throws Exception {
+    public void itemsAreShown() throws Exception {
         PagedComics comics = comicsPage(1001, "2017-01-01", 10, false);
         when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenReturn(Single.just(comics));
 
@@ -82,6 +83,40 @@ public class ComicListActivityTest {
                 .title("title 1010")
                 .number("# 1010")
                 .date("2017-01-10");
+    }
+
+    @Test
+    public void changeSortOrder() throws Exception {
+        when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenAnswer(
+                invocation -> {
+                    ComicNumber comicNumber = invocation.getArgument(0);
+                    int pageSize = invocation.getArgument(2);
+                    switch (comicNumber.intVal()) {
+                        case 1:
+                            return Single.just(comicsPage(1, "2017-01-01", pageSize, true));
+                        case 20:
+                            return Single.just(comicsPage(100, "2018-01-01", -pageSize, true));
+                        default:
+                            fail("Unexpected comic number requested: " + comicNumber);
+                    }
+                    return null;
+                }
+        );
+
+        launchActivity();
+
+        robot.check().itemCheck(0).number("# 1001");
+        robot.check().itemCheck(9).number("# 1010");
+
+        robot.perform().sortNewestToOldest();
+
+        robot.check().itemCheck(0).number("# 1020");
+        robot.check().itemCheck(9).number("# 1011");
+
+        robot.perform().sortOldestToNewest();
+
+        robot.check().itemCheck(0).number("# 1001");
+        robot.check().itemCheck(9).number("# 1010");
     }
 
     @Test

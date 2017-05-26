@@ -11,12 +11,10 @@ import javax.inject.Inject;
 
 import features.comic.domain.models.ComicNumber;
 import me.vaughandroid.xkcdreader.R;
-import testutils.CustomViewAssertions;
 import testutils.CustomViewMatchers;
 
 import static android.app.Activity.RESULT_OK;
 import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.Intents.intending;
@@ -125,11 +123,19 @@ public class ComicListActivityRobot {
 
     public class Perform {
 
+        public Perform sortNewestToOldest() {
+            // XXX
+            return this;
+        }
+
+        public Perform sortOldestToNewest() {
+            // XXX
+            return this;
+        }
+
         public ItemPerform item(int idx) {
             return new ItemPerform(idx);
         }
-
-
 
         public class ItemPerform {
 

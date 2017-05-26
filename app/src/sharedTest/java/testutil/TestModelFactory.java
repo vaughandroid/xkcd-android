@@ -57,10 +57,18 @@ public class TestModelFactory {
         LocalDate localDate = LocalDate.parse(dateString);
         ComicNumber comicNumber = ComicNumber.of(firstComicNumber);
         List<ComicResult> comics = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            comics.add(comicResult(comicNumber.intVal(), localDate.toString()));
-            comicNumber = comicNumber.next();
-            localDate = localDate.plusDays(1);
+        if (count > 0) {
+            for (int i = 0; i < count; i++) {
+                comics.add(comicResult(comicNumber.intVal(), localDate.toString()));
+                comicNumber = comicNumber.next();
+                localDate = localDate.plusDays(1);
+            }
+        } else {
+            for (int i = 0; i > count; i--) {
+                comics.add(comicResult(comicNumber.intVal(), localDate.toString()));
+                comicNumber = comicNumber.previous();
+                localDate = localDate.minusDays(1);
+            }
         }
         return PagedComics.of(comics, hasAnotherPage ? comicNumber : null);
     }
