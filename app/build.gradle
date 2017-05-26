@@ -50,7 +50,7 @@ dependencies {
 
     compile 'com.jakewharton.threetenabp:threetenabp:1.0.5'
 
-    def daggerVersion = '2.10' // TODO: Use HEAD-SNAPSHOT/2.11 for nicer mocking in UI tests
+    def daggerVersion = '2.11'
     compile 'com.google.dagger:dagger:' + daggerVersion
     compile 'com.google.dagger:dagger-android:' + daggerVersion
     annotationProcessor 'com.google.dagger:dagger-compiler:' + daggerVersion

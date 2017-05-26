@@ -8,16 +8,17 @@ import com.jakewharton.threetenabp.BuildConfig;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
-import dagger.android.HasDispatchingActivityInjector;
+import dagger.android.HasActivityInjector;
 import di.AppModule;
 import di.DaggerAppComponent;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
-public class XKCDroidApp extends Application implements HasDispatchingActivityInjector {
+public class XKCDroidApp extends Application implements HasActivityInjector {
 
-    @Inject DispatchingAndroidInjector<Activity> dispatchingAndroidInjector;
+    @Inject DispatchingAndroidInjector<Activity> androidInjector;
 
     @Override
     public void onCreate() {
@@ -36,7 +37,7 @@ public class XKCDroidApp extends Application implements HasDispatchingActivityIn
     }
 
     @Override
-    public DispatchingAndroidInjector<Activity> activityInjector() {
-        return dispatchingAndroidInjector;
+    public AndroidInjector<Activity> activityInjector() {
+        return androidInjector;
     }
 }
