@@ -43,7 +43,7 @@ public class ComicNumberTest {
 
     @Test
     public void nextPage_WithinRange() throws Exception {
-        List<ComicNumber> page = of(123).nextPage(4);
+        List<ComicNumber> page = of(123).numbersForNextPage(4);
         assertThat(page).containsExactly(
                 of(123),
                 of(124),
@@ -54,13 +54,13 @@ public class ComicNumberTest {
 
     @Test
     public void nextPage_Size0_ReturnsEmptyList() throws Exception {
-        List<ComicNumber> page = of(123).nextPage(0);
+        List<ComicNumber> page = of(123).numbersForNextPage(0);
         assertThat(page).hasSize(0);
     }
 
     @Test
     public void previousPage() throws Exception {
-        List<ComicNumber> page = of(12).previousPage(4);
+        List<ComicNumber> page = of(12).numbersForPreviousPage(4);
         assertThat(page).containsExactly(
                 of(12),
                 of(11),
@@ -71,7 +71,7 @@ public class ComicNumberTest {
 
     @Test
     public void previousPage_Size0_ReturnsEmptyList() throws Exception {
-        List<ComicNumber> page = of(100).previousPage(0);
+        List<ComicNumber> page = of(100).numbersForPreviousPage(0);
         assertThat(page).hasSize(0);
     }
 }

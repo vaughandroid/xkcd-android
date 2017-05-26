@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
-import features.comic.domain.models.Comic;
 import features.comic.domain.models.ComicNumber;
 import features.comic.domain.models.ComicResult;
 import features.comic.domain.models.MissingComic;
@@ -22,7 +21,7 @@ public class GetNextPageOfComicsImpl implements ComicUseCases.GetNextPageOfComic
 
     @Override
     public Single<PagedComics> asSingle(@NonNull ComicNumber first, int pageSize) {
-        return Observable.fromIterable(first.nextPage(pageSize))
+        return Observable.fromIterable(first.numbersForNextPage(pageSize))
                 .flatMapSingle(comicNumber ->
                         getComic.asSingle(comicNumber)
                                 .map(ComicResult::of)

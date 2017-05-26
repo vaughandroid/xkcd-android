@@ -46,7 +46,7 @@ public class ComicListActivityRobot {
             return this;
         }
 
-        public ItemCheck item(int idx) {
+        public ItemCheck itemCheck(int idx) {
             return new ItemCheck(idx);
         }
 

@@ -31,7 +31,7 @@ public class ComicListActivity extends CLEActivity {
         return new Intent(context, ComicListActivity.class);
     }
 
-    public static final int PAGE_SIZE = 20;
+    private static final int PAGE_SIZE = 20;
 
     private ComicUseCases.GetNextPageOfComics getNextPageOfComics;
 

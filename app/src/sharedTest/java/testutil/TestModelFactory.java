@@ -37,15 +37,31 @@ public class TestModelFactory {
     }
 
     @NonNull
+    public static ComicResult comicResult(int number) {
+        return ComicResult.of(comic(number));
+    }
+
+
+    @NonNull
+    public static ComicResult comicResult(int number, String dateString) {
+        return ComicResult.of(comic(number, dateString));
+    }
+
+    @NonNull
+    public static ComicResult missingComicResult(int number) {
+        return ComicResult.of(missingComic(number));
+    }
+
+    @NonNull
     public static PagedComics comicsPage(int firstComicNumber, String dateString, int count, boolean hasAnotherPage) {
         LocalDate localDate = LocalDate.parse(dateString);
         ComicNumber comicNumber = ComicNumber.of(firstComicNumber);
         List<ComicResult> comics = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            comics.add(ComicResult.of(comic(comicNumber.intVal(), localDate.toString())));
+            comics.add(comicResult(comicNumber.intVal(), localDate.toString()));
             comicNumber = comicNumber.next();
             localDate = localDate.plusDays(1);
         }
-        return PagedComics.of(comics, hasAnotherPage ? comicNumber.next() : null);
+        return PagedComics.of(comics, hasAnotherPage ? comicNumber : null);
     }
 }

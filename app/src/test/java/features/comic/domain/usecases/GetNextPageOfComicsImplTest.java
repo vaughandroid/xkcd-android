@@ -11,13 +11,14 @@ import features.comic.domain.models.ComicResult;
 import features.comic.domain.models.PagedComics;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
-import testutil.TestModelFactory;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static testutil.TestModelFactory.comic;
+import static testutil.TestModelFactory.comicResult;
+import static testutil.TestModelFactory.missingComicResult;
 
 public class GetNextPageOfComicsImplTest {
 
@@ -49,7 +50,10 @@ public class GetNextPageOfComicsImplTest {
                 Single.just(comic(1))
         );
 
-        PagedComics expected = PagedComics.of(asList(ComicResult.of(comic(1)), ComicResult.of(comic(2)), ComicResult.of(comic(3))), ComicNumber.of(4));
+        PagedComics expected = PagedComics.of(
+                asList(comicResult(1), comicResult(2), comicResult(3)),
+                ComicNumber.of(4)
+        );
 
         PagedComics actual = it.asSingle(ComicNumber.of(1), 3).blockingGet();
 
@@ -76,10 +80,10 @@ public class GetNextPageOfComicsImplTest {
 
         PagedComics expected = PagedComics.of(
                 asList(
-                        ComicResult.of(comic(100)),
-                        ComicResult.of(TestModelFactory.missingComic(101)),
-                        ComicResult.of(comic(102)),
-                        ComicResult.of(TestModelFactory.missingComic(103))
+                        comicResult(100),
+                        missingComicResult(101),
+                        comicResult(102),
+                        missingComicResult(103)
                 ),
                 ComicNumber.of(104));
 

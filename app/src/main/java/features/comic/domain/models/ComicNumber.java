@@ -28,7 +28,7 @@ public abstract class ComicNumber implements Serializable, Comparable<ComicNumbe
     }
 
     @NonNull
-    public List<ComicNumber> nextPage(int size) {
+    public List<ComicNumber> numbersForNextPage(int size) {
         ArrayList<ComicNumber> page = new ArrayList<>();
         for (int i = intVal(); i < intVal() + size; i++) {
             page.add(of(i));
@@ -37,7 +37,7 @@ public abstract class ComicNumber implements Serializable, Comparable<ComicNumbe
     }
 
     @NonNull
-    public List<ComicNumber> previousPage(int size) {
+    public List<ComicNumber> numbersForPreviousPage(int size) {
         ArrayList<ComicNumber> page = new ArrayList<>();
         for (int i = intVal(); i > intVal() - size; i--) {
             page.add(of(i));
