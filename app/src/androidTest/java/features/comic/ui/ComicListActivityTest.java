@@ -21,6 +21,8 @@ import app.TestApp;
 import features.comic.domain.models.ComicNumber;
 import features.comic.domain.models.ComicResult;
 import features.comic.domain.models.PagedComics;
+import features.comic.domain.usecases.ComicUseCases;
+import features.comic.domain.usecases.ComicUseCases.GetLatestComicNumber;
 import features.comic.domain.usecases.ComicUseCases.GetNextPageOfComics;
 import io.reactivex.Single;
 import rx.AndroidSchedulerProvider;
@@ -44,6 +46,7 @@ public class ComicListActivityTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock GetNextPageOfComics getNextPageOfComicsStub;
+    @Mock GetLatestComicNumber getLatestComicNumberStub;
 
     private ComicListActivityRobot robot;
     private Context targetContext;
@@ -56,6 +59,7 @@ public class ComicListActivityTest {
 
         TestApp.activityInjector = instance -> ((ComicListActivity) instance).inject(
                 getNextPageOfComicsStub,
+                getLatestComicNumberStub,
                 new AndroidSchedulerProvider()
         );
 
@@ -87,15 +91,15 @@ public class ComicListActivityTest {
 
     @Test
     public void changeSortOrder() throws Exception {
+        when(getLatestComicNumberStub.asSingle()).thenReturn(Single.just(ComicNumber.of(100)));
         when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenAnswer(
                 invocation -> {
                     ComicNumber comicNumber = invocation.getArgument(0);
-                    int pageSize = invocation.getArgument(2);
                     switch (comicNumber.intVal()) {
                         case 1:
-                            return Single.just(comicsPage(1, "2017-01-01", pageSize, true));
-                        case 20:
-                            return Single.just(comicsPage(100, "2018-01-01", -pageSize, true));
+                            return Single.just(comicsPage(1, "2017-01-01", 10, true));
+                        case 100:
+                            return Single.just(comicsPage(100, "2018-01-01", -10, true));
                         default:
                             fail("Unexpected comic number requested: " + comicNumber);
                     }
@@ -105,18 +109,18 @@ public class ComicListActivityTest {
 
         launchActivity();
 
-        robot.check().itemCheck(0).number("# 1001");
-        robot.check().itemCheck(9).number("# 1010");
+        robot.check().itemCheck(0).number("# 1");
+        robot.check().itemCheck(9).number("# 10");
 
         robot.perform().sortNewestToOldest();
 
-        robot.check().itemCheck(0).number("# 1020");
-        robot.check().itemCheck(9).number("# 1011");
+        robot.check().itemCheck(0).number("# 100");
+        robot.check().itemCheck(9).number("# 91");
 
         robot.perform().sortOldestToNewest();
 
-        robot.check().itemCheck(0).number("# 1001");
-        robot.check().itemCheck(9).number("# 1010");
+        robot.check().itemCheck(0).number("# 1");
+        robot.check().itemCheck(9).number("# 10");
     }
 
     @Test

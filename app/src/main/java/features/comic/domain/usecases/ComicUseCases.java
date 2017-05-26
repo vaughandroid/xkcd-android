@@ -18,7 +18,7 @@ public interface ComicUseCases {
         Single<Comic> asSingle();
     }
 
-    interface GetMaximumComicNumber {
+    interface GetLatestComicNumber {
         Single<ComicNumber> asSingle();
     }
 

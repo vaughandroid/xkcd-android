@@ -8,11 +8,11 @@ import features.comic.domain.models.Comic;
 import features.comic.domain.models.ComicNumber;
 import io.reactivex.Single;
 
-public class GetMaximumComicNumberImpl implements ComicUseCases.GetMaximumComicNumber {
+public class GetLatestComicNumberImpl implements ComicUseCases.GetLatestComicNumber {
 
     private final ComicUseCases.GetLatestComic getLatestComic;
 
-    @Inject public GetMaximumComicNumberImpl(@NonNull ComicUseCases.GetLatestComic getLatestComic) {
+    @Inject public GetLatestComicNumberImpl(@NonNull ComicUseCases.GetLatestComic getLatestComic) {
         this.getLatestComic = getLatestComic;
     }
 

@@ -64,6 +64,13 @@ class ComicAdapter extends RecyclerView.Adapter<ComicAdapter.ViewHolder> {
         setHasStableIds(true);
     }
 
+    public void clear() {
+        items.clear();
+        nextComicNumber = null;
+        isLoading = false;
+        notifyDataSetChanged();
+    }
+
     public void addPage(PagedComics page) {
         items.addAll(page.items());
         nextComicNumber = page.nextComicNumber();

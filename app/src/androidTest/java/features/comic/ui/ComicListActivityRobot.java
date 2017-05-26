@@ -1,6 +1,7 @@
 package features.comic.ui;
 
 import android.app.Instrumentation;
+import android.content.Context;
 import android.content.Intent;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.action.ViewActions;
@@ -14,7 +15,10 @@ import me.vaughandroid.xkcdreader.R;
 import testutils.CustomViewMatchers;
 
 import static android.app.Activity.RESULT_OK;
+import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
+import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.Intents.intending;
@@ -29,7 +33,10 @@ import static testutils.CustomViewMatchers.recyclerViewItem;
 
 public class ComicListActivityRobot {
 
+    private final Context targetContext;
+
     @Inject public ComicListActivityRobot() {
+        targetContext = getInstrumentation().getTargetContext();
     }
 
     public Check check() {
@@ -124,12 +131,14 @@ public class ComicListActivityRobot {
     public class Perform {
 
         public Perform sortNewestToOldest() {
-            // XXX
+            openActionBarOverflowOrOptionsMenu(targetContext);
+            onView(withText("Newest to Oldest")).perform(click());
             return this;
         }
 
         public Perform sortOldestToNewest() {
-            // XXX
+            openActionBarOverflowOrOptionsMenu(targetContext);
+            onView(withText("Oldest to Newest")).perform(click());
             return this;
         }
 
@@ -147,7 +156,7 @@ public class ComicListActivityRobot {
 
             public ItemPerform open() {
                 scrollToAndGetItemInteraction(idx)
-                        .perform(ViewActions.click());
+                        .perform(click());
                 return this;
             }
 
