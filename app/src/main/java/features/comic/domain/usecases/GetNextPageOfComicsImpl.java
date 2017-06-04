@@ -42,7 +42,7 @@ public class GetNextPageOfComicsImpl implements ComicUseCases.GetNextPageOfComic
                         (map, comicResult) -> map.put(comicResult.number(), comicResult)
                 )
                 .map(resultMap -> createSortedResultsList(resultMap, comicNumbers))
-                .map(comicResults -> PagedComics.of(comicResults, ComicNumber.of(first.intVal() + pageSize)));
+                .map(comicResults -> PagedComics.of(comicResults, sortOrder.next(comicNumbers.get(pageSize - 1))));
     }
 
     @NonNull

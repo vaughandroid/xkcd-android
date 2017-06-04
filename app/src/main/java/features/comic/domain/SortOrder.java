@@ -10,21 +10,23 @@ public enum SortOrder {
     OLDEST_TO_NEWEST;
 
     public List<ComicNumber> numbersForNextPage(ComicNumber firstNumber, int size) {
+        ArrayList<ComicNumber> comicNumbers = new ArrayList<>();
+        ComicNumber currentNumber = firstNumber;
+        for (int i = 0; i < size; i++) {
+            comicNumbers.add(currentNumber);
+            currentNumber = next(currentNumber);
+        }
+        return comicNumbers;
+    }
+
+    public ComicNumber next(ComicNumber currentNumber) {
         switch(this) {
             case OLDEST_TO_NEWEST:
-                ArrayList<ComicNumber> page1 = new ArrayList<>();
-                for (int i1 = firstNumber.intVal(); i1 < firstNumber.intVal() + size; i1++) {
-                    page1.add(ComicNumber.of(i1));
-                }
-                return page1;
+                return currentNumber.next();
             case NEWEST_TO_OLDEST:
-                ArrayList<ComicNumber> page = new ArrayList<>();
-                for (int i = firstNumber.intVal(); i > firstNumber.intVal() - size; i--) {
-                    page.add(ComicNumber.of(i));
-                }
-                return page;
+                return currentNumber.previous();
             default:
-                throw new IllegalArgumentException("Unsupported sort order: " + this);
+                throw new UnsupportedOperationException("Not supported for: " + this.name());
         }
     }
 }

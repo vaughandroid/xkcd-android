@@ -19,17 +19,24 @@ public class SortOrderTest {
     @Parameterized.Parameters
     public static Object[][] data() {
         return new Object[][]{
-                {OLDEST_TO_NEWEST, new ComicNumber[]{of(123), of(124), of(125), of(126)}},
-                {NEWEST_TO_OLDEST, new ComicNumber[]{of(123), of(122), of(121), of(120)}},
+                {OLDEST_TO_NEWEST, of(124), new ComicNumber[]{of(123), of(124), of(125), of(126)}},
+                {NEWEST_TO_OLDEST, of(122), new ComicNumber[]{of(123), of(122), of(121), of(120)}},
         };
     }
 
     private final SortOrder sortOrder;
+    private final ComicNumber expectedNext;
     private final ComicNumber[] expectedComicNumbers;
 
-    public SortOrderTest(SortOrder sortOrder, ComicNumber[] expectedComicNumbers) {
+    public SortOrderTest(SortOrder sortOrder, ComicNumber expectedNext, ComicNumber[] expectedComicNumbers) {
         this.sortOrder = sortOrder;
+        this.expectedNext = expectedNext;
         this.expectedComicNumbers = expectedComicNumbers;
+    }
+
+    @Test
+    public void next() throws Exception {
+        assertThat(sortOrder.next(of(123))).isEqualTo(expectedNext);
     }
 
     @Test
