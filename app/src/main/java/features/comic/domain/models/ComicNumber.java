@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @AutoValue
-public abstract class ComicNumber implements Serializable, Comparable<ComicNumber> {
+public abstract class ComicNumber implements Serializable, Comparable<ComicNumber> { // XXX no longer needs to be Comparable?
 
     public static ComicNumber of(int intVal) {
         return new AutoValue_ComicNumber(intVal);
@@ -25,24 +25,6 @@ public abstract class ComicNumber implements Serializable, Comparable<ComicNumbe
     @NonNull
     public ComicNumber previous() {
         return ComicNumber.of(intVal() - 1);
-    }
-
-    @NonNull
-    public List<ComicNumber> numbersForNextPage(int size) {
-        ArrayList<ComicNumber> page = new ArrayList<>();
-        for (int i = intVal(); i < intVal() + size; i++) {
-            page.add(of(i));
-        }
-        return page;
-    }
-
-    @NonNull
-    public List<ComicNumber> numbersForPreviousPage(int size) {
-        ArrayList<ComicNumber> page = new ArrayList<>();
-        for (int i = intVal(); i > intVal() - size; i--) {
-            page.add(of(i));
-        }
-        return page;
     }
 
     @Override

@@ -15,14 +15,19 @@ import javax.inject.Inject;
 import app.CLEActivity;
 import butterknife.BindView;
 import dagger.android.AndroidInjection;
+import features.comic.domain.SortOrder;
 import features.comic.domain.models.ComicNumber;
 import features.comic.domain.usecases.ComicUseCases;
+import io.reactivex.Single;
 import io.reactivex.disposables.Disposable;
 import me.vaughandroid.xkcdreader.R;
 import rx.SchedulerProvider;
 import timber.log.Timber;
 import util.IntentUtils;
 import util.annotations.NeedsTests;
+
+import static features.comic.domain.SortOrder.NEWEST_TO_OLDEST;
+import static features.comic.domain.SortOrder.OLDEST_TO_NEWEST;
 
 @NeedsTests
 public class ComicListActivity extends CLEActivity {
@@ -31,9 +36,8 @@ public class ComicListActivity extends CLEActivity {
         return new Intent(context, ComicListActivity.class);
     }
 
-    private static final int PAGE_SIZE = 20;
-
     private ComicUseCases.GetNextPageOfComics getNextPageOfComics;
+    private ComicUseCases.GetLatestComicNumber getLatestComicNumber;
 
     private SchedulerProvider schedulerProvider;
 
@@ -42,9 +46,15 @@ public class ComicListActivity extends CLEActivity {
     @BindView(R.id.comic_list_recyclerview) RecyclerView recyclerView;
     private ComicAdapter adapter;
 
+    // TODO: Default to NEWEST_TO_OLDEST
+    private SortOrder sortOrder = OLDEST_TO_NEWEST;
+
     @Inject
-    void inject(ComicUseCases.GetNextPageOfComics getNextPageOfComics, SchedulerProvider schedulerProvider) {
+    void inject(ComicUseCases.GetNextPageOfComics getNextPageOfComics,
+                ComicUseCases.GetLatestComicNumber getLatestComicNumber,
+                SchedulerProvider schedulerProvider) {
         this.getNextPageOfComics = getNextPageOfComics;
+        this.getLatestComicNumber = getLatestComicNumber;
         this.schedulerProvider = schedulerProvider;
     }
 
@@ -85,15 +95,53 @@ public class ComicListActivity extends CLEActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
+            case R.id.action_newest_to_oldest:
+                setSortOrder(NEWEST_TO_OLDEST);
+                return true;
+            case R.id.action_oldest_to_newest:
+                setSortOrder(OLDEST_TO_NEWEST);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void setSortOrder(SortOrder sortOrder) {
+        if (this.sortOrder != sortOrder) {
+            this.sortOrder = sortOrder;
+
+            Single<ComicNumber> firstNumberSingle;
+            switch (sortOrder) {
+                case OLDEST_TO_NEWEST:
+                    firstNumberSingle = Single.just(ComicNumber.of(1));
+                    break;
+                case NEWEST_TO_OLDEST:
+                    firstNumberSingle = getLatestComicNumber.asSingle();
+                    break;
+                default:
+                    throw new IllegalStateException("Unsupported sort order: " + sortOrder);
+            }
+
+            showLoading();
+            firstNumberSingle
+                    .flatMap(comicNumber -> getNextPageOfComics.asSingle(comicNumber, sortOrder))
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                            pagedComics -> {
+                                adapter.clear();
+                                adapter.addPage(pagedComics);
+                                showContent();
+                            },
+                            error -> {
+                                Timber.e(error);
+                                showError();
+                            }
+                    );
+        }
+    }
+
     private void fetchNextPageOfComics(ComicNumber first) {
-        Disposable d = getNextPageOfComics.asSingle(first, PAGE_SIZE)
+        Disposable d = getNextPageOfComics.asSingle(first, sortOrder)
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         pagedComics -> {

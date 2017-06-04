@@ -3,8 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="features.comic.ui.ComicListActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_newest_to_oldest"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:title="@string/newest_to_oldest"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_oldest_to_newest"
+        android:orderInCategory="101"
+        android:title="@string/oldest_to_newest"
+        app:showAsAction="never"/>
+
 </menu>

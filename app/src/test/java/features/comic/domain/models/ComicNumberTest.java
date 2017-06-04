@@ -40,38 +40,4 @@ public class ComicNumberTest {
     public void compareTo_Lower() throws Exception {
         assertThat(of(13).compareTo(of(14))).isLessThan(0);
     }
-
-    @Test
-    public void nextPage_WithinRange() throws Exception {
-        List<ComicNumber> page = of(123).numbersForNextPage(4);
-        assertThat(page).containsExactly(
-                of(123),
-                of(124),
-                of(125),
-                of(126)
-        );
-    }
-
-    @Test
-    public void nextPage_Size0_ReturnsEmptyList() throws Exception {
-        List<ComicNumber> page = of(123).numbersForNextPage(0);
-        assertThat(page).hasSize(0);
-    }
-
-    @Test
-    public void previousPage() throws Exception {
-        List<ComicNumber> page = of(12).numbersForPreviousPage(4);
-        assertThat(page).containsExactly(
-                of(12),
-                of(11),
-                of(10),
-                of(9)
-        );
-    }
-
-    @Test
-    public void previousPage_Size0_ReturnsEmptyList() throws Exception {
-        List<ComicNumber> page = of(100).numbersForPreviousPage(0);
-        assertThat(page).hasSize(0);
-    }
 }

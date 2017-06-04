@@ -21,14 +21,16 @@ import app.TestApp;
 import features.comic.domain.models.ComicNumber;
 import features.comic.domain.models.ComicResult;
 import features.comic.domain.models.PagedComics;
+import features.comic.domain.usecases.ComicUseCases.GetLatestComicNumber;
 import features.comic.domain.usecases.ComicUseCases.GetNextPageOfComics;
 import io.reactivex.Single;
 import rx.AndroidSchedulerProvider;
 import testutils.TestAppRule;
 
+import static features.comic.domain.SortOrder.NEWEST_TO_OLDEST;
+import static features.comic.domain.SortOrder.OLDEST_TO_NEWEST;
 import static junit.framework.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static testutil.TestModelFactory.comicResult;
 import static testutil.TestModelFactory.comicsPage;
@@ -39,10 +41,12 @@ import static testutil.TestModelFactory.missingComicResult;
 public class ComicListActivityTest {
 
     @Rule public TestAppRule testAppRule = new TestAppRule();
-    @Rule public IntentsTestRule<ComicListActivity> activityTestRule = new IntentsTestRule<>(ComicListActivity.class, false, false);
+    @Rule public IntentsTestRule<ComicListActivity> activityTestRule =
+            new IntentsTestRule<>(ComicListActivity.class, false, false);
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock GetNextPageOfComics getNextPageOfComicsStub;
+    @Mock GetLatestComicNumber getLatestComicNumberStub;
 
     private ComicListActivityRobot robot;
     private Context targetContext;
@@ -55,6 +59,7 @@ public class ComicListActivityTest {
 
         TestApp.activityInjector = instance -> ((ComicListActivity) instance).inject(
                 getNextPageOfComicsStub,
+                getLatestComicNumberStub,
                 new AndroidSchedulerProvider()
         );
 
@@ -62,9 +67,9 @@ public class ComicListActivityTest {
     }
 
     @Test
-    public void itemsAreShownInOrder() throws Exception {
+    public void itemsAreShown() throws Exception {
         PagedComics comics = comicsPage(1001, "2017-01-01", 10, false);
-        when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenReturn(Single.just(comics));
+        when(getNextPageOfComicsStub.asSingle(any(), any())).thenReturn(Single.just(comics));
 
         launchActivity();
 
@@ -85,9 +90,34 @@ public class ComicListActivityTest {
     }
 
     @Test
+    public void changeSortOrder() throws Exception {
+        when(getLatestComicNumberStub.asSingle())
+                .thenReturn(Single.just(ComicNumber.of(100)));
+        when(getNextPageOfComicsStub.asSingle(ComicNumber.of(1), OLDEST_TO_NEWEST))
+                .thenReturn(Single.just(comicsPage(1, "2017-01-01", 10, true)));
+        when(getNextPageOfComicsStub.asSingle(ComicNumber.of(100), NEWEST_TO_OLDEST))
+                .thenReturn(Single.just(comicsPage(100, "2018-01-01", -10, true)));
+
+        launchActivity();
+
+        robot.check().itemCheck(0).number("# 1");
+        robot.check().itemCheck(9).number("# 10");
+
+        robot.perform().sortNewestToOldest();
+
+        robot.check().itemCheck(0).number("# 100");
+        robot.check().itemCheck(9).number("# 91");
+
+        robot.perform().sortOldestToNewest();
+
+        robot.check().itemCheck(0).number("# 1");
+        robot.check().itemCheck(9).number("# 10");
+    }
+
+    @Test
     public void paging() throws Exception {
         //noinspection unchecked
-        when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenAnswer(
+        when(getNextPageOfComicsStub.asSingle(any(), any())).thenAnswer(
                 invocation -> {
                     ComicNumber comicNumber = invocation.getArgument(0);
                     switch (comicNumber.intVal()) {
@@ -124,7 +154,7 @@ public class ComicListActivityTest {
     @Test
     public void clickOnComicItemShowsComic() throws Exception {
         PagedComics comics = comicsPage(1000, "2017-01-01", 10, false);
-        when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenReturn(Single.just(comics));
+        when(getNextPageOfComicsStub.asSingle(any(), any())).thenReturn(Single.just(comics));
 
         launchActivity();
 
@@ -143,7 +173,7 @@ public class ComicListActivityTest {
                 comicResult(125)
         );
         PagedComics pagedComics = PagedComics.of(items);
-        when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenReturn(Single.just(pagedComics));
+        when(getNextPageOfComicsStub.asSingle(any(), any())).thenReturn(Single.just(pagedComics));
 
         launchActivity();
 

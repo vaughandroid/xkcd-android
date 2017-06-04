@@ -1,20 +1,25 @@
 package features.comic.domain.usecases;
 
+import org.assertj.core.api.JUnitSoftAssertions;
+import org.assertj.core.api.Java6JUnitSoftAssertions;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import features.comic.domain.models.ComicNumber;
 import features.comic.domain.models.ComicResult;
 import features.comic.domain.models.PagedComics;
 import io.reactivex.Single;
-import io.reactivex.observers.TestObserver;
 
-import static java.util.Arrays.asList;
+import static features.comic.domain.SortOrder.NEWEST_TO_OLDEST;
+import static features.comic.domain.SortOrder.OLDEST_TO_NEWEST;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static testutil.TestModelFactory.comic;
 import static testutil.TestModelFactory.comicResult;
@@ -26,70 +31,69 @@ public class GetNextPageOfComicsImplTest {
 
     @Mock ComicUseCases.GetComic getComicUseCase;
 
-    private final TestObserver<PagedComics> testObserver = new TestObserver<>();
+    private GetNextPageOfComicsImpl useCase;
 
-    @Test public void fetchesExpectedComics() throws Exception {
-        GetNextPageOfComicsImpl it = new GetNextPageOfComicsImpl(getComicUseCase);
+    @Before public void setUp() throws Exception {
+        useCase = new GetNextPageOfComicsImpl(getComicUseCase, 3);
+
         when(getComicUseCase.asSingle(ComicNumber.of(1))).thenReturn(Single.just(comic(1)));
         when(getComicUseCase.asSingle(ComicNumber.of(2))).thenReturn(Single.just(comic(2)));
         when(getComicUseCase.asSingle(ComicNumber.of(3))).thenReturn(Single.just(comic(3)));
-
-        PagedComics expected = PagedComics.of(asList(ComicResult.of(comic(1)), ComicResult.of(comic(2)), ComicResult.of(comic(3))), ComicNumber.of(4));
-
-        PagedComics actual = it.asSingle(ComicNumber.of(1), 3).blockingGet();
-
-        assertThat(actual).isEqualTo(expected);
+        when(getComicUseCase.asSingle(ComicNumber.of(4))).thenReturn(Single.just(comic(4)));
     }
 
-    @Test public void comicsAreOrdered() throws Exception {
-        GetNextPageOfComicsImpl it = new GetNextPageOfComicsImpl(getComicUseCase);
-        //noinspection unchecked
-        when(getComicUseCase.asSingle(any())).thenReturn(
-                Single.just(comic(3)),
-                Single.just(comic(2)),
-                Single.just(comic(1))
+    @Test public void fetchesExpectedComics() throws Exception {
+        PagedComics actual = useCase.asSingle(ComicNumber.of(1), OLDEST_TO_NEWEST).blockingGet();
+
+        assertThat(actual.items()).containsExactlyInAnyOrder(
+                ComicResult.of(comic(1)),
+                ComicResult.of(comic(2)),
+                ComicResult.of(comic(3))
         );
+    }
+
+    @Test public void order_oldestToNewest() throws Exception {
+        PagedComics actual = useCase.asSingle(ComicNumber.of(1), OLDEST_TO_NEWEST).blockingGet();
 
         PagedComics expected = PagedComics.of(
-                asList(comicResult(1), comicResult(2), comicResult(3)),
+                Arrays.asList(
+                        comicResult(1),
+                        comicResult(2),
+                        comicResult(3)
+                ),
                 ComicNumber.of(4)
         );
 
-        PagedComics actual = it.asSingle(ComicNumber.of(1), 3).blockingGet();
-
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test public void getComicCount_Error_RaisesError() throws Exception {
-        GetNextPageOfComicsImpl it = new GetNextPageOfComicsImpl(getComicUseCase);
+    @Test public void order_newestToOldest() throws Exception {
+        PagedComics actual = useCase.asSingle(ComicNumber.of(4), NEWEST_TO_OLDEST).blockingGet();
 
-        it.asSingle(ComicNumber.of(1), 1).subscribe(testObserver);
+        PagedComics expected = PagedComics.of(
+                Arrays.asList(
+                        comicResult(4),
+                        comicResult(3),
+                        comicResult(2)
+                ),
+                ComicNumber.of(1)
+        );
 
-        testObserver.assertError(RuntimeException.class);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test public void getComic_Errors_ReturnsMissingComics() throws Exception {
-        GetNextPageOfComicsImpl it = new GetNextPageOfComicsImpl(getComicUseCase);
-        //noinspection unchecked
-        when(getComicUseCase.asSingle(any())).thenReturn(
-                Single.just(comic(100)),
-                Single.error(new RuntimeException()),
-                Single.just(comic(102)),
-                Single.error(new RuntimeException())
+        when(getComicUseCase.asSingle(ComicNumber.of(1))).thenReturn(Single.error(new RuntimeException()));
+        when(getComicUseCase.asSingle(ComicNumber.of(2))).thenReturn(Single.just(comic(2)));
+        when(getComicUseCase.asSingle(ComicNumber.of(3))).thenReturn(Single.error(new RuntimeException()));
+
+        PagedComics actual = useCase.asSingle(ComicNumber.of(1), OLDEST_TO_NEWEST).blockingGet();
+
+        assertThat(actual.items()).containsExactly(
+                missingComicResult(1),
+                comicResult(2),
+                missingComicResult(3)
         );
-
-        PagedComics expected = PagedComics.of(
-                asList(
-                        comicResult(100),
-                        missingComicResult(101),
-                        comicResult(102),
-                        missingComicResult(103)
-                ),
-                ComicNumber.of(104));
-
-        PagedComics actual = it.asSingle(ComicNumber.of(100), 4).blockingGet();
-
-        assertThat(actual).isEqualTo(expected);
     }
 
 }

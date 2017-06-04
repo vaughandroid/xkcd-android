@@ -4,4 +4,6 @@
     <string name="loading">Loading…</string>
     <string name="comic_number"># %1$d</string>
     <string name="failed_to_load">\u0020failed to load! :(</string>
+    <string name="newest_to_oldest">Newest to Oldest</string>
+    <string name="oldest_to_newest">Oldest to Newest</string>
 </resources>

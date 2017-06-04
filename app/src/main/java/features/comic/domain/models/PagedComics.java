@@ -19,7 +19,6 @@ public abstract class PagedComics {
 
     public abstract List<ComicResult> items();
 
-    // TODO: Can make this a computed value now.
     @Nullable
     public abstract ComicNumber nextComicNumber();
 }
