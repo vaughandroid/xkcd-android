@@ -36,8 +36,6 @@ public class ComicListActivity extends CLEActivity {
         return new Intent(context, ComicListActivity.class);
     }
 
-    private static final int PAGE_SIZE = 20;
-
     private ComicUseCases.GetNextPageOfComics getNextPageOfComics;
     private ComicUseCases.GetLatestComicNumber getLatestComicNumber;
 
@@ -126,7 +124,7 @@ public class ComicListActivity extends CLEActivity {
 
             showLoading();
             firstNumberSingle
-                    .flatMap(comicNumber -> getNextPageOfComics.asSingle(comicNumber, PAGE_SIZE))
+                    .flatMap(comicNumber -> getNextPageOfComics.asSingle(comicNumber, sortOrder))
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
                             pagedComics -> {
@@ -143,7 +141,7 @@ public class ComicListActivity extends CLEActivity {
     }
 
     private void fetchNextPageOfComics(ComicNumber first) {
-        Disposable d = getNextPageOfComics.asSingle(first, PAGE_SIZE)
+        Disposable d = getNextPageOfComics.asSingle(first, sortOrder)
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                         pagedComics -> {

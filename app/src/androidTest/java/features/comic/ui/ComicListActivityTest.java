@@ -21,16 +21,16 @@ import app.TestApp;
 import features.comic.domain.models.ComicNumber;
 import features.comic.domain.models.ComicResult;
 import features.comic.domain.models.PagedComics;
-import features.comic.domain.usecases.ComicUseCases;
 import features.comic.domain.usecases.ComicUseCases.GetLatestComicNumber;
 import features.comic.domain.usecases.ComicUseCases.GetNextPageOfComics;
 import io.reactivex.Single;
 import rx.AndroidSchedulerProvider;
 import testutils.TestAppRule;
 
+import static features.comic.domain.SortOrder.NEWEST_TO_OLDEST;
+import static features.comic.domain.SortOrder.OLDEST_TO_NEWEST;
 import static junit.framework.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static testutil.TestModelFactory.comicResult;
 import static testutil.TestModelFactory.comicsPage;
@@ -69,7 +69,7 @@ public class ComicListActivityTest {
     @Test
     public void itemsAreShown() throws Exception {
         PagedComics comics = comicsPage(1001, "2017-01-01", 10, false);
-        when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenReturn(Single.just(comics));
+        when(getNextPageOfComicsStub.asSingle(any(), any())).thenReturn(Single.just(comics));
 
         launchActivity();
 
@@ -91,21 +91,12 @@ public class ComicListActivityTest {
 
     @Test
     public void changeSortOrder() throws Exception {
-        when(getLatestComicNumberStub.asSingle()).thenReturn(Single.just(ComicNumber.of(100)));
-        when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenAnswer(
-                invocation -> {
-                    ComicNumber comicNumber = invocation.getArgument(0);
-                    switch (comicNumber.intVal()) {
-                        case 1:
-                            return Single.just(comicsPage(1, "2017-01-01", 10, true));
-                        case 100:
-                            return Single.just(comicsPage(100, "2018-01-01", -10, true));
-                        default:
-                            fail("Unexpected comic number requested: " + comicNumber);
-                    }
-                    return null;
-                }
-        );
+        when(getLatestComicNumberStub.asSingle())
+                .thenReturn(Single.just(ComicNumber.of(100)));
+        when(getNextPageOfComicsStub.asSingle(ComicNumber.of(1), OLDEST_TO_NEWEST))
+                .thenReturn(Single.just(comicsPage(1, "2017-01-01", 10, true)));
+        when(getNextPageOfComicsStub.asSingle(ComicNumber.of(100), NEWEST_TO_OLDEST))
+                .thenReturn(Single.just(comicsPage(100, "2018-01-01", -10, true)));
 
         launchActivity();
 
@@ -126,7 +117,7 @@ public class ComicListActivityTest {
     @Test
     public void paging() throws Exception {
         //noinspection unchecked
-        when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenAnswer(
+        when(getNextPageOfComicsStub.asSingle(any(), any())).thenAnswer(
                 invocation -> {
                     ComicNumber comicNumber = invocation.getArgument(0);
                     switch (comicNumber.intVal()) {
@@ -163,7 +154,7 @@ public class ComicListActivityTest {
     @Test
     public void clickOnComicItemShowsComic() throws Exception {
         PagedComics comics = comicsPage(1000, "2017-01-01", 10, false);
-        when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenReturn(Single.just(comics));
+        when(getNextPageOfComicsStub.asSingle(any(), any())).thenReturn(Single.just(comics));
 
         launchActivity();
 
@@ -182,7 +173,7 @@ public class ComicListActivityTest {
                 comicResult(125)
         );
         PagedComics pagedComics = PagedComics.of(items);
-        when(getNextPageOfComicsStub.asSingle(any(), anyInt())).thenReturn(Single.just(pagedComics));
+        when(getNextPageOfComicsStub.asSingle(any(), any())).thenReturn(Single.just(pagedComics));
 
         launchActivity();
 

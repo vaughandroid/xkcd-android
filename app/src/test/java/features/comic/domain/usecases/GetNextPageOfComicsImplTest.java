@@ -12,6 +12,7 @@ import features.comic.domain.models.PagedComics;
 import io.reactivex.Single;
 import io.reactivex.observers.TestObserver;
 
+import static features.comic.domain.SortOrder.OLDEST_TO_NEWEST;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,20 +30,20 @@ public class GetNextPageOfComicsImplTest {
     private final TestObserver<PagedComics> testObserver = new TestObserver<>();
 
     @Test public void fetchesExpectedComics() throws Exception {
-        GetNextPageOfComicsImpl it = new GetNextPageOfComicsImpl(getComicUseCase);
+        GetNextPageOfComicsImpl it = new GetNextPageOfComicsImpl(getComicUseCase, 3);
         when(getComicUseCase.asSingle(ComicNumber.of(1))).thenReturn(Single.just(comic(1)));
         when(getComicUseCase.asSingle(ComicNumber.of(2))).thenReturn(Single.just(comic(2)));
         when(getComicUseCase.asSingle(ComicNumber.of(3))).thenReturn(Single.just(comic(3)));
 
         PagedComics expected = PagedComics.of(asList(ComicResult.of(comic(1)), ComicResult.of(comic(2)), ComicResult.of(comic(3))), ComicNumber.of(4));
 
-        PagedComics actual = it.asSingle(ComicNumber.of(1), 3).blockingGet();
+        PagedComics actual = it.asSingle(ComicNumber.of(1), OLDEST_TO_NEWEST).blockingGet();
 
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test public void comicsAreOrdered() throws Exception {
-        GetNextPageOfComicsImpl it = new GetNextPageOfComicsImpl(getComicUseCase);
+        GetNextPageOfComicsImpl it = new GetNextPageOfComicsImpl(getComicUseCase, 3);
         //noinspection unchecked
         when(getComicUseCase.asSingle(any())).thenReturn(
                 Single.just(comic(3)),
@@ -55,21 +56,21 @@ public class GetNextPageOfComicsImplTest {
                 ComicNumber.of(4)
         );
 
-        PagedComics actual = it.asSingle(ComicNumber.of(1), 3).blockingGet();
+        PagedComics actual = it.asSingle(ComicNumber.of(1), OLDEST_TO_NEWEST).blockingGet();
 
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test public void getComicCount_Error_RaisesError() throws Exception {
-        GetNextPageOfComicsImpl it = new GetNextPageOfComicsImpl(getComicUseCase);
+        GetNextPageOfComicsImpl it = new GetNextPageOfComicsImpl(getComicUseCase, 3);
 
-        it.asSingle(ComicNumber.of(1), 1).subscribe(testObserver);
+        it.asSingle(ComicNumber.of(1), OLDEST_TO_NEWEST).subscribe(testObserver);
 
         testObserver.assertError(RuntimeException.class);
     }
 
     @Test public void getComic_Errors_ReturnsMissingComics() throws Exception {
-        GetNextPageOfComicsImpl it = new GetNextPageOfComicsImpl(getComicUseCase);
+        GetNextPageOfComicsImpl it = new GetNextPageOfComicsImpl(getComicUseCase, 4);
         //noinspection unchecked
         when(getComicUseCase.asSingle(any())).thenReturn(
                 Single.just(comic(100)),
@@ -87,7 +88,7 @@ public class GetNextPageOfComicsImplTest {
                 ),
                 ComicNumber.of(104));
 
-        PagedComics actual = it.asSingle(ComicNumber.of(100), 4).blockingGet();
+        PagedComics actual = it.asSingle(ComicNumber.of(100), OLDEST_TO_NEWEST).blockingGet();
 
         assertThat(actual).isEqualTo(expected);
     }

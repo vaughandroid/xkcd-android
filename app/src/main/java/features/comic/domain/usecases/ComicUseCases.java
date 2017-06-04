@@ -2,6 +2,7 @@ package features.comic.domain.usecases;
 
 import android.support.annotation.NonNull;
 
+import features.comic.domain.SortOrder;
 import features.comic.domain.models.Comic;
 import features.comic.domain.models.ComicNumber;
 import features.comic.domain.models.PagedComics;
@@ -23,6 +24,6 @@ public interface ComicUseCases {
     }
 
     interface GetNextPageOfComics {
-        Single<PagedComics> asSingle(@NonNull ComicNumber first, int pageSize);
+        Single<PagedComics> asSingle(@NonNull ComicNumber first, SortOrder sortOrder);
     }
 }

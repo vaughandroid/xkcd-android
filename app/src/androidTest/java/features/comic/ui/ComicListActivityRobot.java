@@ -4,7 +4,6 @@ import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.espresso.ViewInteraction;
-import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.intent.matcher.IntentMatchers;
 

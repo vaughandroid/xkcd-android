@@ -16,6 +16,7 @@ import features.comic.di.ViewComicActivityModule;
                 AndroidInjectionModule.class,
                 ComicUseCasesModule.class,
                 ComicListActivityModule.class,
+                ConstantsModule.class,
                 ViewComicActivityModule.class
         }
 )
