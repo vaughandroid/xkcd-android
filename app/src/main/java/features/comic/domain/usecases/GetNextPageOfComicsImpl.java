@@ -30,7 +30,7 @@ public class GetNextPageOfComicsImpl implements ComicUseCases.GetNextPageOfComic
 
     @Override
     public Single<PagedComics> asSingle(@NonNull ComicNumber first, SortOrder sortOrder) {
-        List<ComicNumber> comicNumbers = first.numbersForNextPage(pageSize, sortOrder);
+        List<ComicNumber> comicNumbers = sortOrder.numbersForNextPage(first, pageSize);
         return Observable.fromIterable(comicNumbers)
                 .flatMapSingle(comicNumber ->
                         getComic.asSingle(comicNumber)
