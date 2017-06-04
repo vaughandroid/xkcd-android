@@ -4,17 +4,11 @@ import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
-import java.util.Comparator;
-
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
 @AutoValue
 public abstract class ComicResult {
-
-    public static Comparator<ComicResult> ascendingComparator() {
-        return (c1, c2) -> c1.number().compareTo(c2.number());
-    }
 
     public static ComicResult of(Comic comic) {
         return new AutoValue_ComicResult(comic, null);

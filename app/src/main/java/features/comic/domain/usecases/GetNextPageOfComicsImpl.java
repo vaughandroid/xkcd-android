@@ -2,6 +2,10 @@ package features.comic.domain.usecases;
 
 import android.support.annotation.NonNull;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -26,14 +30,29 @@ public class GetNextPageOfComicsImpl implements ComicUseCases.GetNextPageOfComic
 
     @Override
     public Single<PagedComics> asSingle(@NonNull ComicNumber first, SortOrder sortOrder) {
-        return Observable.fromIterable(first.numbersForNextPage(pageSize))
+        List<ComicNumber> comicNumbers = first.numbersForNextPage(pageSize, sortOrder);
+        return Observable.fromIterable(comicNumbers)
                 .flatMapSingle(comicNumber ->
                         getComic.asSingle(comicNumber)
                                 .map(ComicResult::of)
                                 .onErrorReturnItem(ComicResult.of(MissingComic.of(comicNumber)))
                 )
-                .toSortedList(ComicResult.ascendingComparator())
-                .map(comics -> PagedComics.of(comics, ComicNumber.of(first.intVal() + pageSize)));
+                .collectInto(
+                        new HashMap<ComicNumber, ComicResult>(),
+                        (map, comicResult) -> map.put(comicResult.number(), comicResult)
+                )
+                .map(resultMap -> createSortedResultsList(resultMap, comicNumbers))
+                .map(comicResults -> PagedComics.of(comicResults, ComicNumber.of(first.intVal() + pageSize)));
+    }
+
+    @NonNull
+    private List<ComicResult> createSortedResultsList(HashMap<ComicNumber, ComicResult> resultMap,
+                                                      List<ComicNumber> desiredOrder) {
+        List<ComicResult> sortedResults = new ArrayList<>(pageSize);
+        for (ComicNumber comicNumber : desiredOrder) {
+            sortedResults.add(resultMap.get(comicNumber));
+        }
+        return sortedResults;
     }
 
 }
