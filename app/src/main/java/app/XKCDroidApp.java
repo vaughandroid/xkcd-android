@@ -13,6 +13,8 @@ import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasActivityInjector;
 import di.AppModule;
 import di.DaggerAppComponent;
+import io.reactivex.plugins.RxJavaPlugins;
+import rx.RxUtils;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
 
@@ -29,6 +31,8 @@ public class XKCDroidApp extends Application implements HasActivityInjector {
         }
 
         AndroidThreeTen.init(this);
+
+        RxJavaPlugins.setErrorHandler(RxUtils.errorHandler());
 
         DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
