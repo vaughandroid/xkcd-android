@@ -14,6 +14,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.TextView;
 
 import com.github.chrisbanes.photoview.PhotoView;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
@@ -23,8 +24,12 @@ import butterknife.BindView;
 import dagger.android.AndroidInjection;
 import features.comic.domain.models.ComicNumber;
 import features.comic.domain.usecases.ComicUseCases;
+import features.comic.ui.ViewComicUiEvent.AltTextClicked;
+import features.comic.ui.ViewComicUiEvent.FabClicked;
 import io.codetail.animation.ViewAnimationUtils;
+import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.PublishSubject;
 import me.vaughandroid.xkcdreader.R;
 import rx.SchedulerProvider;
 import timber.log.Timber;
@@ -47,6 +52,7 @@ public class ViewComicActivity extends CLEActivity {
     private ComicUseCases.GetComic getComic;
 
     private SchedulerProvider schedulerProvider;
+    private Observable<ViewComicVM> viewModelObservable;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.fab) FloatingActionButton fab;
@@ -54,10 +60,16 @@ public class ViewComicActivity extends CLEActivity {
     @BindView(R.id.comic_alt_text) TextView altTextView;
     @BindView(R.id.comic_alt_text_reveal) View altTextRevealView;
 
+    private final PublishSubject<ViewComicUiEvent> uiEventPublisher = PublishSubject.create();
+    private ViewComicVM viewModel;
+
     @Inject
-    void inject(ComicUseCases.GetComic getComic, SchedulerProvider schedulerProvider) {
+    void inject(ComicUseCases.GetComic getComic, SchedulerProvider schedulerProvider
+//            , Observable<ViewComicVM> viewModelObservable
+    ) {
         this.getComic = getComic;
         this.schedulerProvider = schedulerProvider;
+        this.viewModelObservable = viewModelObservable;
     }
 
     @Override
@@ -65,35 +77,45 @@ public class ViewComicActivity extends CLEActivity {
         AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         initViews();
+        initSubscriptions();
         fetchComic();
     }
 
     private void initViews() {
         setContentView(R.layout.activity_view_comic);
 
-        fab.setOnClickListener(v -> {
-            v.setClickable(false);
-            showAltText();
-        });
-        altTextView.setClickable(false);
-        altTextView.setOnClickListener(v -> {
-            v.setClickable(false);
-            hideAltText();
-        });
-
-        initToolbar();
-    }
-
-    private void initToolbar() {
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
     }
 
+    private void initSubscriptions() {
+        Observable.merge(
+                RxView.clicks(fab).map(ignored -> new FabClicked()),
+                RxView.clicks(altTextView).map(ignored -> new AltTextClicked())
+        ).subscribe(uiEventPublisher);
+
+        viewModelObservable.subscribe(this::onViewModelUpdated, Timber::e);
+    }
+
+    private void onViewModelUpdated(ViewComicVM viewModel) {
+        if (viewModel.showAltText() != this.viewModel.showAltText()) {
+            if (viewModel.showAltText()) {
+                showAltText();
+            } else {
+                hideAltText();
+            }
+        }
+
+        this.viewModel= viewModel;
+    }
+
     private void showAltText() {
+        fab.setClickable(false);
         animateFabToolbar(true);
     }
 
     private void hideAltText() {
+        altTextView.setClickable(false);
         animateFabToolbar(false);
     }
 

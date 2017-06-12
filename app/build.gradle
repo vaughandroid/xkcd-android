@@ -59,6 +59,12 @@ dependencies {
     compile 'io.reactivex.rxjava2:rxjava:2.0.6'
     compile 'com.jakewharton.rxrelay2:rxrelay:2.0.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    def rxBindings2Version = '2.0.0'
+    compile 'com.jakewharton.rxbinding2:rxbinding:' + rxBindings2Version
+    compile 'com.jakewharton.rxbinding2:rxbinding-support-v4:' + rxBindings2Version
+    compile 'com.jakewharton.rxbinding2:rxbinding-appcompat-v7:' + rxBindings2Version
+    compile 'com.jakewharton.rxbinding2:rxbinding-design:' + rxBindings2Version
+    compile 'com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:' + rxBindings2Version
     def rxLifecycleVersion = '2.0.1'
     compile 'com.trello.rxlifecycle2:rxlifecycle:' + rxLifecycleVersion
     compile 'com.trello.rxlifecycle2:rxlifecycle-android:' + rxLifecycleVersion
