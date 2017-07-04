@@ -1,6 +1,7 @@
 package testutils;
 
 import android.content.res.Resources;
+import android.support.test.InstrumentationRegistry;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -11,60 +12,49 @@ import org.hamcrest.TypeSafeMatcher;
 /**
  * With credit to <a href="https://github.com/dannyroa/espresso-samples">Danny Roa</a>
  */
-// TODO: Cleanup.
 // TODO: Make this easier to use - e.g. helpers for validating specific child/descendant views?
 public class RecyclerViewMatcher {
 
     private final int recyclerViewId;
-
     public RecyclerViewMatcher(int recyclerViewId) {
         this.recyclerViewId = recyclerViewId;
     }
 
     public Matcher<View> atPosition(final int position) {
-        return atPositionOnView(position, -1);
-    }
-
-    public Matcher<View> atPositionOnView(final int position, final int targetViewId) {
         return new TypeSafeMatcher<View>() {
-            Resources resources = null;
+            boolean cachedChildView;
             View childView;
 
             public void describeTo(Description description) {
-                String idDescription = Integer.toString(recyclerViewId);
-                if (this.resources != null) {
-                    try {
-                        idDescription = this.resources.getResourceName(recyclerViewId);
-                    } catch (Resources.NotFoundException e) {
-                        idDescription = String.format("%s (resource name not found)", recyclerViewId);
-                    }
-                }
+                description.appendText("with id: " + getResourceName());
+            }
 
-                description.appendText("with id: " + idDescription);
+            private String getResourceName() {
+                Resources resources = InstrumentationRegistry.getTargetContext().getResources();
+                String name;
+                try {
+                    name = resources.getResourceName(recyclerViewId);
+                } catch (Resources.NotFoundException e) {
+                    name = String.format("%s (resource name not found)", recyclerViewId);
+                }
+                return name;
             }
 
             public boolean matchesSafely(View view) {
-                this.resources = view.getResources();
+                return view == getChildView(view);
+            }
 
-                if (childView == null) {
-                    RecyclerView recyclerView =
-                            (RecyclerView) view.getRootView().findViewById(recyclerViewId);
-                    if (recyclerView != null && recyclerView.getId() == recyclerViewId) {
+            private View getChildView(View view) {
+                if (!cachedChildView) {
+                    RecyclerView recyclerView = (RecyclerView) view.getRootView().findViewById(recyclerViewId);
+                    if (recyclerView != null) {
                         childView = recyclerView.findViewHolderForAdapterPosition(position).itemView;
                     }
-                    else {
-                        return false;
-                    }
+                    cachedChildView = true;
                 }
-
-                if (targetViewId == -1) {
-                    return view == childView;
-                } else {
-                    View targetView = childView.findViewById(targetViewId);
-                    return view == targetView;
-                }
-
+                return childView;
             }
         };
     }
+
 }
